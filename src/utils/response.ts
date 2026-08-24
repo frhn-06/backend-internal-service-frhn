@@ -1,0 +1,123 @@
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
+import { Response } from "express";
+import {ZodError} from 'zod';
+
+const response = {
+    success: (res: Response, data: any, message: string) => {
+        return res.status(200).json({
+            meta: {
+                status: 200,
+                message: message
+            },
+            data: data
+        })
+    },
+
+    error: (res: Response, error: unknown, message: string) => {
+
+        console.log(error);
+        if(error instanceof ZodError) {
+            const arr = error.issues.map((err) => err.message);
+            const message = arr.join(", ");
+            return res.status(400).json({
+                meta: {
+                    status: 400,
+                    message: message
+                }
+            })
+        }
+
+
+        
+        if(error instanceof PrismaClientKnownRequestError) {
+            console.log(error);
+            switch(error.code) {
+                case "P2002":
+                    return res.status(409).json({
+                        meta: {
+                            status: 409,
+                            message: "Field data sudah ada yg digunakan" 
+                        }
+                    })
+                
+                case "P2025" :
+                    return res.status(404).json({
+                        meta: {
+                            status: 404,
+                            message: "Data tidak ditemukan"
+                        }
+                    })
+                    
+                default:
+                    return res.status(500).json({
+                        meta: {
+                            status: 500,
+                            message: "Error database" 
+                        }
+                    })
+            }
+        }
+
+        
+
+        if (error instanceof Error) {
+            return res.status(400).json({
+                meta: {
+                    status: 400,
+                    message: error.message
+                }
+            });
+        }
+        
+
+
+        return res.status(500).json({
+            meta: {
+                status: 500,
+                message: message,
+            },
+            data: error
+        })
+    },
+
+    notFound: (res: Response, message: string) => {
+        return res.status(404).json({
+            meta: {
+                status: 404,
+                message: message
+            }
+        })
+    },
+
+    unauthorize: (res: Response) => {
+        return res.status(401).json({
+            meta: {
+                status: 401,
+                message: "Unauthorized"
+            }
+        })
+    },
+
+    forbidden: (res: Response) => {
+        return res.status(403).json({
+            meta: {
+                status: 403,
+                message: "Forbidden"
+            }
+        })
+    },
+
+    pagination: (res: Response, data: any, pagination: {currentPage: number; totalPage: number; total: number}, message: string) => {
+        return res.status(200).json({
+            meta: {
+                status: 200,
+                message: message
+            },
+            data: data,
+            pagination: pagination
+        })
+    }
+}
+
+
+export default response;
