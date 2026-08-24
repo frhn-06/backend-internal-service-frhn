@@ -1,5 +1,5 @@
 import express from 'express';
-import authRoute from './routes/auth.route';
+import authRoute from './routes/auth.route.js';
 import cors from 'cors'
 import bodyParser from 'body-parser';
 

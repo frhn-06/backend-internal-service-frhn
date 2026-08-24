@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import response from "../utils/response";
-import { LoginDTO, RegisterDTO } from "../validations/user.validation";
-import AuthService from "../services/auth.service";
-import { comparePassword } from "../utils/bcrypt";
-import { signIn } from "../utils/jwt";
+import response from "../utils/response.js";
+import { LoginDTO, RegisterDTO } from "../validations/user.validation.js";
+import AuthService from "../services/auth.service.js";
+import { comparePassword } from "../utils/bcrypt.js";
+import { signIn } from "../utils/jwt.js";
 
 
 const authController = {

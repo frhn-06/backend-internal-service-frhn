@@ -1,5 +1,5 @@
-import app from "./app";
-import { PORT } from "./utils/env";
+import app from "./app.js";
+import { PORT } from "./utils/env.js";
 
 
 

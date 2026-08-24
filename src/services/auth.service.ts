@@ -1,8 +1,8 @@
 import { z} from 'zod';
-import { LoginDTO, RegisterDTO } from '../validations/user.validation';
-import prisma from '../config/prisma'
-import { hashPassword } from '../utils/bcrypt';
-import { UserRole } from '../generated/prisma/enums';
+import { LoginDTO, RegisterDTO } from '../validations/user.validation.js';
+import prisma from '../config/prisma.js'
+import { hashPassword } from '../utils/bcrypt.js';
+import { UserRole } from '../generated/prisma/enums.js';
 
 
 const AuthService = {
