@@ -3,6 +3,7 @@ import authRoute from './routes/auth.route.js';
 import cors from 'cors'
 import bodyParser from 'body-parser';
 import departmentRoute from './routes/department.route.js';
+import agentRoute from './routes/agent.route.js';
 
 const app = express();
 
@@ -19,5 +20,6 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoute);
 app.use("/api/department", departmentRoute);
+app.use("/api/agent", agentRoute);
 
 export default app;

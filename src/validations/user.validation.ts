@@ -23,6 +23,13 @@ const LoginDTO = zod.object({
 })
 
 
+const AgentDTO = zod.object({
+    name: z.string().trim().min(2, "Nama tidak memenuhi stndar minimal").max(100, "Nama tidak memenuhi standar maksimal"),
+    email: z.email("Format email tidak valid").trim(),
+    departmentId: z.number().min(0),
+    password: passwordValidate,
+});
 
 
-export {RegisterDTO, LoginDTO}
+
+export {RegisterDTO, LoginDTO, AgentDTO}

@@ -34,6 +34,7 @@ const departmentConroller = {
             
             const pageNumber = Number(page);
             const limitNumber = Number(limit);
+            if(Number.isNaN(pageNumber) || Number.isNaN(limitNumber)) return response.notFound(res, "List department tidak ditemukan")
 
             const setQuery = () : Prisma.DepartmentWhereInput => {
                 let query : Prisma.DepartmentWhereInput  = {};
@@ -71,6 +72,7 @@ const departmentConroller = {
             const {id} = req.params;
             if(!id) return response.notFound(res, "Department tidak ditemukan");
             const idNumber = Number(id)
+            if(Number.isNaN(idNumber)) return response.notFound(res, "Agent tidak ditemukan");
 
             const result = await DepartmentService.findById(idNumber);
 
@@ -88,6 +90,7 @@ const departmentConroller = {
             const {id} = req.params;
             if(!id) return response.notFound(res, "Department tidak ditemukan");
             const idNumber = Number(id);
+            if(Number.isNaN(idNumber)) return response.notFound(res, "Agent tidak ditemukan");
 
             const validate = DepartmentDTO.partial();
             const validateUpdate = validate.parse(req.body);
@@ -106,6 +109,7 @@ const departmentConroller = {
             const {id} = req.params;
             if(!id) return response.notFound(res, "Department tidak ditemukan");
             const idNumber = Number(id);
+            if(Number.isNaN(idNumber)) return response.notFound(res, "Agent tidak ditemukan");
 
             const result = await DepartmentService.delete(idNumber);
 
