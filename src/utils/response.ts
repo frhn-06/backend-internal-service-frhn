@@ -30,7 +30,6 @@ const response = {
 
         
         if(error instanceof PrismaClientKnownRequestError) {
-            console.log(error);
             switch(error.code) {
                 case "P2002":
                     return res.status(409).json({
@@ -45,6 +44,14 @@ const response = {
                         meta: {
                             status: 404,
                             message: "Data tidak ditemukan"
+                        }
+                    })
+
+                case "P1001" :
+                    return res.status(500).json({
+                        meta: {
+                            status: 500,
+                            message: "Tidak ada koneksi"
                         }
                     })
                     
