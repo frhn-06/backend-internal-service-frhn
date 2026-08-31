@@ -29,15 +29,18 @@ const agentController = {
             const {
                 page = 1,
                 limit = 8,
+                active,
                 depart,
                 search
             } = req.query as {
                 page: number | string;
                 limit: number | string;
+                active: string;
                 depart: number | string;
                 search: string;
             }
 
+        
             const pageNumber = Number(page);
             const limitNumber = Number(limit);
             const departNumber = Number(depart);
@@ -46,7 +49,6 @@ const agentController = {
             const setQuery = () : Prisma.UserWhereInput => {
                 let query : Prisma.UserWhereInput = {
                     role: UserRole.AGENT,
-                    isActive: true
                 }
 
                 if(depart) {
@@ -57,6 +59,12 @@ const agentController = {
                     query.name = {
                         contains: search,
                         mode: "insensitive"
+                    }
+                }
+
+                if(active) {
+                    if(active === "true" || active === "false") {
+                        query.isActive = Boolean(active)
                     }
                 }
 
