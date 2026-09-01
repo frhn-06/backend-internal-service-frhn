@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import departmentRoute from './routes/department.route.js';
 import agentRoute from './routes/agent.route.js';
 import errorMiddleware from './middlewares/error.middleware.js';
+import employeeRoute from './routes/employee.route.js';
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoute);
 app.use("/api/department", departmentRoute);
 app.use("/api/agent", agentRoute);
+app.use("/api/employee", employeeRoute);
 
 
 app.use(errorMiddleware.serverError())

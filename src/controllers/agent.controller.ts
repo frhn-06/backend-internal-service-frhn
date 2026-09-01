@@ -142,7 +142,7 @@ const agentController = {
             const agent = await UserService.getUserById(idNumber, {role: UserRole.AGENT});
             if(!agent) return response.notFound(res, "Agent tidak ditemukan");
 
-            const result = await AgentService.updateStatus(idNumber, !agent.isActive);
+            const result = await UserService.updateStatus(idNumber, !agent.isActive);
 
             response.success(res, result, "Success to update status agent")
         } catch(error) {

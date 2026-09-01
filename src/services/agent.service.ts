@@ -2,7 +2,6 @@ import {z} from 'zod';
 import { AgentDTO } from '../validations/user.validation.js';
 import prisma from '../config/prisma.js';
 import { UserRole } from '../generated/prisma/enums.js';
-import { Prisma } from '../generated/prisma/client.js';
 
 
 const AgentService = {
@@ -15,6 +14,9 @@ const AgentService = {
                     departmentId: data.departmentId,
                     password: data.password,
                     role: UserRole.AGENT
+                },
+                omit: {
+                    password: true
                 }
             })
         }catch(error) {
@@ -29,7 +31,10 @@ const AgentService = {
                 where: {
                     id
                 },
-                data: data
+                data: data,
+                omit: {
+                    password: true
+                }
             });
         } catch(error) {
             throw error
@@ -37,20 +42,7 @@ const AgentService = {
     },
 
 
-    updateStatus: async (id: number, isActive: boolean) => {
-        try {
-            return await prisma.user.update({
-                where: {
-                    id
-                },
-                data: {
-                    isActive
-                }
-            });
-        } catch(error) {
-            throw error
-        }
-    }
+    
 };
 
 export default AgentService;

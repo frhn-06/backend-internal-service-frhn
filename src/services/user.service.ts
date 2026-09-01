@@ -60,6 +60,9 @@ const UserService = {
             return await prisma.user.delete({
                 where: {
                     id
+                },
+                omit: {
+                    password: true
                 }
             })
         } catch(error) {
@@ -71,6 +74,24 @@ const UserService = {
         try {
             return await prisma.user.count({
                 where: query
+            });
+        } catch(error) {
+            throw error
+        }
+    },
+
+    updateStatus: async (id: number, isActive: boolean) => {
+        try {
+            return await prisma.user.update({
+                where: {
+                    id
+                },
+                data: {
+                    isActive
+                },
+                omit: {
+                    password: true
+                }
             });
         } catch(error) {
             throw error
