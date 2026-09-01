@@ -127,7 +127,26 @@ const agentController = {
 
             response.success(res, result, "Success to update agent")
         }catch(error) {
-            response.error(res, error, "Failed to update agen");
+            response.error(res, error, "Failed to update agent");
+        }
+    },
+
+    updateStatus: async(req:IreqUser, res:Response) => {
+        try {
+            const {id} = req.params;
+            if(!id) return response.notFound(res, "Agent tidak ditemukan");
+
+            const idNumber = Number(id);
+            if(Number.isNaN(idNumber)) return response.notFound(res, "Agent tidak ditemukan");
+
+            const agent = await UserService.getUserById(idNumber, {role: UserRole.AGENT});
+            if(!agent) return response.notFound(res, "Agent tidak ditemukan");
+
+            const result = await AgentService.updateStatus(idNumber, !agent.isActive);
+
+            response.success(res, result, "Success to update status agent")
+        } catch(error) {
+            response.error(res, error, "Failed to update status agent");
         }
     },
 

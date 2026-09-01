@@ -34,8 +34,23 @@ const AgentService = {
         } catch(error) {
             throw error
         }
-    }
+    },
 
-}
+
+    updateStatus: async (id: number, isActive: boolean) => {
+        try {
+            return await prisma.user.update({
+                where: {
+                    id
+                },
+                data: {
+                    isActive
+                }
+            });
+        } catch(error) {
+            throw error
+        }
+    }
+};
 
 export default AgentService;
