@@ -62,10 +62,12 @@ const agentController = {
                     }
                 }
 
-                if(active) {
-                    if(active === "true" || active === "false") {
-                        query.isActive = Boolean(active)
-                    }
+                if (active === "true") {
+                    query.isActive = true;
+                }
+
+                if (active === "false") {
+                    query.isActive = false;
                 }
 
                 return query;
