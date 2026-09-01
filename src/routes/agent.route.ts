@@ -16,6 +16,8 @@ agentRoute.patch("/:id", [authMiddleware, roleMiddleware([UserRole.ADMIN])], age
 
 agentRoute.delete("/:id", [authMiddleware, roleMiddleware([UserRole.ADMIN])], agentController.delete);
 
+agentRoute.patch("/:id/status", [authMiddleware, roleMiddleware([UserRole.ADMIN])], agentController.updateStatus);
+
 
 export default agentRoute;
 
