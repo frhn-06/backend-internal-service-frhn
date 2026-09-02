@@ -33,6 +33,14 @@ const CategoryService = {
                         }
                     }
                 },
+                orderBy: [
+                    {
+                        departmentId: "asc"
+                    },
+                    {
+                        name: "asc"
+                    }
+                ]
             });
         } catch (error) {
             throw error;
