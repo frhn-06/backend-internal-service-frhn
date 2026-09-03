@@ -1,7 +1,8 @@
 import z from "zod";
 import { DepartmentDTO } from "../validations/department.validation.js";
 import prisma from "../config/prisma.js";
-import { Prisma } from "../generated/prisma/client.js";
+import { Department, Prisma } from "../generated/prisma/client.js";
+import { DepartmentWhereInput } from "../generated/prisma/models.js";
 
 const DepartmentService = {
     create: async (data: z.infer<typeof DepartmentDTO>) => {

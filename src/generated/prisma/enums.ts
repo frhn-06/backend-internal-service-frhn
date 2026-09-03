@@ -16,3 +16,25 @@ export const UserRole = {
 } as const
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]
+
+
+export const StatusTicket = {
+  OPEN: 'OPEN',
+  IN_PROGRESS: 'IN_PROGRESS',
+  WAITING: 'WAITING',
+  RESOLVED: 'RESOLVED',
+  CLOSED: 'CLOSED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type StatusTicket = (typeof StatusTicket)[keyof typeof StatusTicket]
+
+
+export const PriorityTicket = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  URGENT: 'URGENT'
+} as const
+
+export type PriorityTicket = (typeof PriorityTicket)[keyof typeof PriorityTicket]

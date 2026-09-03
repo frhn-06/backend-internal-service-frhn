@@ -60,6 +60,17 @@ const CategoryService = {
         }
     },
 
+
+    findByQuery: async(query: Prisma.CategoryWhereInput) => {
+        try {
+            return await prisma.category.findFirst({
+                where: query
+            })
+        }catch(error) {
+            throw error;
+        }
+    },
+
     update: async(id: number, data: Partial<z.infer<typeof CategoryDTO>>) => {
         try {
             return await prisma.category.update({

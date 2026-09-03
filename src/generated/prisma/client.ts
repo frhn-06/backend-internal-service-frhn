@@ -56,3 +56,8 @@ export type Department = Prisma.DepartmentModel
  * 
  */
 export type Category = Prisma.CategoryModel
+/**
+ * Model Ticket
+ * 
+ */
+export type Ticket = Prisma.TicketModel

@@ -14,6 +14,7 @@ const authMiddleware = async (req:Request, res:Response, next: NextFunction) => 
         const user = await getUserByToken(token);
 
         (req as unknown as IreqUser ).user = user;
+        
 
         next();
     } catch (error) {

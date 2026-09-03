@@ -7,6 +7,7 @@ import agentRoute from './routes/agent.route.js';
 import errorMiddleware from './middlewares/error.middleware.js';
 import employeeRoute from './routes/employee.route.js';
 import categoryRoute from './routes/category.route.js';
+import ticketRoute from './routes/ticket.route.js';
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use("/api/department", departmentRoute);
 app.use("/api/agent", agentRoute);
 app.use("/api/employee", employeeRoute);
 app.use("/api/category", categoryRoute);
+app.use("/api/ticket", ticketRoute);
 
 
 app.use(errorMiddleware.routeError());

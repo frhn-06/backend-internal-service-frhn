@@ -8,16 +8,19 @@ datasource db {
 }
 
 model User {
-  id           Int         @id @default(autoincrement())
-  name         String
-  email        String      @unique
-  password     String
-  role         UserRole
-  departmentId Int?
-  isActive     Boolean     @default(true)
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  department   Department? @relation(fields: [departmentId], references: [id])
+  id                  Int         @id @default(autoincrement())
+  name                String
+  email               String      @unique
+  password            String
+  role                UserRole
+  departmentId        Int?
+  isActive            Boolean     @default(true)
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  department          Department? @relation(fields: [departmentId], references: [id])
+  
+  employeeTickets     Ticket[]    @relation("EmployeeTickets")
+  agentTickets        Ticket[]    @relation("AgentTickets")
 
   @@index([role, departmentId])
 }
@@ -33,6 +36,7 @@ model Department {
   
   users         User[]
   categories    Category[]
+  tickets       Ticket[]
 }
 
 
@@ -47,13 +51,68 @@ model Category {
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
 
-  department        Department  @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  department        Department  @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+
+  tickets           Ticket[]
 
   @@unique([departmentId, name])
+}
+
+
+
+
+model Ticket {
+  id                Int             @id @default(autoincrement())
+  number            String          @unique
+  title             String
+  description       String
+  status            StatusTicket    @default(OPEN)
+  priority          PriorityTicket
+
+  departmentId      Int
+  categoryId        Int
+  employeeId        Int
+  agentId           Int?
+
+  department        Department      @relation(fields: [departmentId], references: [id], onDelete: Restrict)
+  category          Category        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  employee          User            @relation("EmployeeTickets", fields: [employeeId], references: [id], onDelete: Restrict)
+  agent             User?           @relation("AgentTickets", fields: [agentId], references: [id], onDelete: SetNull)
+
+  assignedAt        DateTime?
+  resolvedAt        DateTime?
+  closedAt          DateTime?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  
+  
+  @@index([employeeId])
+  @@index([agentId])
+  @@index([departmentId])
+  @@index([categoryId])
 }
 
 enum UserRole {
   ADMIN
   AGENT
   EMPLOYEE
+}
+
+
+
+enum StatusTicket {
+  OPEN
+  IN_PROGRESS
+  WAITING
+  RESOLVED
+  CLOSED
+  CANCELLED
+}
+
+
+enum PriorityTicket {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
 }

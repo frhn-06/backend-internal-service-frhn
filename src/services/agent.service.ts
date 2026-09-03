@@ -2,6 +2,7 @@ import {z} from 'zod';
 import { AgentDTO } from '../validations/user.validation.js';
 import prisma from '../config/prisma.js';
 import { UserRole } from '../generated/prisma/enums.js';
+import { hashPassword } from '../utils/bcrypt.js';
 
 
 const AgentService = {
@@ -12,7 +13,7 @@ const AgentService = {
                     name: data.name,
                     email: data.email,
                     departmentId: data.departmentId,
-                    password: data.password,
+                    password: await hashPassword(data.password),
                     role: UserRole.AGENT
                 },
                 omit: {
