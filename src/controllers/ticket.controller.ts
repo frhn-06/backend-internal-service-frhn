@@ -77,6 +77,87 @@ const ticketController = {
                         throw Error("Agent tidak memiliki department");
                     }
 
+                    query.agentId = user.id;
+                }
+
+                if(role === UserRole.EMPLOYEE) query.employeeId = id
+
+                if(status) query.status = status as StatusTicket
+
+                if(priority) query.priority = priority as PriorityTicket
+
+                if(search && typeof search === "string") {
+                    query.OR = [
+                        {
+                            title: {
+                                contains: search,
+                                mode: "insensitive"
+                            } 
+                        },
+                        {
+                            number: {
+                                contains: search,
+                                mode: "insensitive"
+                            }
+                        }
+                    ]
+                }
+
+                return query;
+            }   
+
+            const query = setQuery()
+
+            const result = await TicketService.findByRole(query, numberPage, numberLimit);
+
+            const total = await TicketService.counttotal(query);
+
+            return response.pagination(res, result, {
+                total,
+                totalPage: Math.ceil(total / numberLimit),
+                currentPage: numberPage
+            }, "Success to find tickets")
+
+
+        } catch(error) {
+            response.error(res, error, "Failed to find tickets");
+        }
+    },
+
+
+    findByDepartment: async(req:IreqUser, res:Response) => {
+        try {
+            const id = req.user?.id;
+            if(!id) return response.notFound(res, "User tidak ditemukan");            
+
+            const role = req.user?.role;
+            if(!role) return response.notFound(res, "User tidak ditemukan");
+
+            const {
+                page = 1,
+                limit = 32,
+                status,
+                priority,
+                search
+            } = req.query;
+
+            const numberPage = Number(page);
+            const numberLimit = Number(limit);
+            if(Number.isNaN(numberPage) || Number.isNaN(numberLimit)) return response.notFound(res, "Tickets tidak ditemukan")
+            
+
+            const user = await UserService.getUserById(id);
+            if(!user) return response.notFound(res, "User tidak ditemukan");
+           
+            const setQuery = () => {
+                let query : Prisma.TicketWhereInput = {};
+
+
+                if(role === UserRole.AGENT) {
+                    if(!user.departmentId) {
+                        throw Error("Agent tidak memiliki department");
+                    }
+
                     query.departmentId = user.departmentId;
                 }
 
