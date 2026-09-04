@@ -12,6 +12,8 @@ ticketRoute.post("/", [authMiddleware, roleMiddleware([UserRole.EMPLOYEE])], tic
 
 ticketRoute.get("/", [authMiddleware], ticketController.findByRole);
 
+ticketRoute.get("/find/department", [authMiddleware], ticketController.findByDepartment);
+
 ticketRoute.get("/:id", [authMiddleware], ticketController.findById);
 
 ticketRoute.patch("/:id/take", [

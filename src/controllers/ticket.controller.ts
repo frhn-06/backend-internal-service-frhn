@@ -148,20 +148,12 @@ const ticketController = {
 
             const user = await UserService.getUserById(id);
             if(!user) return response.notFound(res, "User tidak ditemukan");
+            if(!user.departmentId) return response.error(res, false, "Agent belum memiliki department");
            
             const setQuery = () => {
-                let query : Prisma.TicketWhereInput = {};
-
-
-                if(role === UserRole.AGENT) {
-                    if(!user.departmentId) {
-                        throw Error("Agent tidak memiliki department");
-                    }
-
-                    query.departmentId = user.departmentId;
-                }
-
-                if(role === UserRole.EMPLOYEE) query.employeeId = id
+                let query : Prisma.TicketWhereInput = {
+                    departmentId: user.departmentId as unknown as Prisma.IntFilter<"Ticket">
+                };
 
                 if(status) query.status = status as StatusTicket
 
