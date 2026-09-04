@@ -2,14 +2,59 @@ import express from 'express'
 import authMiddleware from '../middlewares/auth.middleware.js';
 import ticketController from '../controllers/ticket.controller.js';
 import roleMiddleware from '../middlewares/role.middleware.js';
-import { UserRole } from '../generated/prisma/enums.js';
+import { StatusTicket, UserRole } from '../generated/prisma/enums.js';
+import statusTicketMiddleware from '../middlewares/status.ticket.middleware.js';
 
 const ticketRoute = express.Router();
 
 
 ticketRoute.post("/", [authMiddleware, roleMiddleware([UserRole.EMPLOYEE])], ticketController.create);
 
-ticketRoute.get("/", [authMiddleware, roleMiddleware([UserRole.EMPLOYEE, UserRole.AGENT, UserRole.ADMIN])], ticketController.findByRole);
+ticketRoute.get("/", [authMiddleware], ticketController.findByRole);
+
+ticketRoute.get("/:id", [authMiddleware], ticketController.findById);
+
+ticketRoute.patch("/:id/take", [
+    authMiddleware, 
+    roleMiddleware([UserRole.AGENT]), 
+    statusTicketMiddleware([StatusTicket.OPEN])
+], ticketController.take);
+
+ticketRoute.patch("/:id/wait", [
+    authMiddleware, 
+    roleMiddleware([UserRole.AGENT]), 
+    statusTicketMiddleware([StatusTicket.IN_PROGRESS])
+], ticketController.waiting);
+
+ticketRoute.patch("/:id/resolve", [
+    authMiddleware, 
+    roleMiddleware([UserRole.AGENT]), 
+    statusTicketMiddleware([StatusTicket.IN_PROGRESS, StatusTicket.WAITING])
+], ticketController.resolved);
+
+ticketRoute.patch("/:id/re_progress", [
+    authMiddleware, 
+    roleMiddleware([UserRole.AGENT]), 
+    statusTicketMiddleware([StatusTicket.WAITING])
+], ticketController.reProgress);
+
+ticketRoute.patch("/:id/re_open", [
+    authMiddleware, 
+    roleMiddleware([UserRole.EMPLOYEE]), 
+    statusTicketMiddleware([StatusTicket.RESOLVED])
+], ticketController.reOpen);
+
+ticketRoute.patch("/:id/close", [
+    authMiddleware, 
+    roleMiddleware([UserRole.EMPLOYEE]), 
+    statusTicketMiddleware([StatusTicket.RESOLVED])
+], ticketController.closed);
+
+ticketRoute.patch("/:id/cancel", [
+    authMiddleware, 
+    roleMiddleware([UserRole.EMPLOYEE]), 
+    statusTicketMiddleware([StatusTicket.OPEN, StatusTicket.IN_PROGRESS, StatusTicket.WAITING])
+], ticketController.cancelled);
 
 
 export default ticketRoute;

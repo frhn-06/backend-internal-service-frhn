@@ -64,6 +64,37 @@ const TicketService = {
     },
 
 
+    findById: async(id:number, query?: Prisma.TicketWhereInput) => {
+        try {
+            return await prisma.ticket.findFirst({
+                where: {
+                    id,
+                    ...(query && {
+                        ...query
+                    })
+                }
+            })
+        } catch (error) {
+            throw error
+        }
+    },
+
+
+
+    update: async(id: number, data: Prisma.TicketUpdateInput) => {
+        try {
+            return await prisma.ticket.update({
+                where: {
+                    id
+                }, 
+                data
+            })
+        } catch(error) {
+            throw error;
+        }
+    },
+
+
 
 
     counttotal: async(query: Prisma.TicketWhereInput) => {
