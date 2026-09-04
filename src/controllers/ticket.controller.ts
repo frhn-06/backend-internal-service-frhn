@@ -84,7 +84,7 @@ const ticketController = {
 
                 if(status) query.status = status as StatusTicket
 
-                if(priority) query.priority = priority as PriorityTicket
+                if(priority === "LOW" || priority === "HIGH" || priority === "MEDIUM" || priority === "URGENT") query.priority = priority
 
                 if(search && typeof search === "string") {
                     query.OR = [
@@ -157,7 +157,7 @@ const ticketController = {
 
                 if(status) query.status = status as StatusTicket
 
-                if(priority) query.priority = priority as PriorityTicket
+                if(priority === "LOW" || priority === "HIGH" || priority === "MEDIUM" || priority === "URGENT") query.priority = priority
 
                 if(search && typeof search === "string") {
                     query.OR = [
