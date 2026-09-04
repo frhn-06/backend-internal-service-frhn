@@ -82,9 +82,19 @@ const ticketController = {
 
                 if(role === UserRole.EMPLOYEE) query.employeeId = id
 
-                if(status) query.status = status as StatusTicket
+                if(status === "OPEN" || 
+                    status === "IN_PROGRESS" ||
+                    status === "WAITING" ||
+                    status === "RESOLVED" ||
+                    status === "CLOSED" ||
+                    status === "CANCELLED"
+                ) query.status = status
 
-                if(priority === "LOW" || priority === "HIGH" || priority === "MEDIUM" || priority === "URGENT") query.priority = priority
+                if(priority === "LOW" || 
+                    priority === "HIGH" || 
+                    priority === "MEDIUM" || 
+                    priority === "URGENT"
+                ) query.priority = priority
 
                 if(search && typeof search === "string") {
                     query.OR = [
@@ -155,9 +165,19 @@ const ticketController = {
                     departmentId: user.departmentId as unknown as Prisma.IntFilter<"Ticket">
                 };
 
-                if(status) query.status = status as StatusTicket
+                if(status === "OPEN" || 
+                    status === "IN_PROGRESS" ||
+                    status === "WAITING" ||
+                    status === "RESOLVED" ||
+                    status === "CLOSED" ||
+                    status === "CANCELLED"
+                ) query.status = status
 
-                if(priority === "LOW" || priority === "HIGH" || priority === "MEDIUM" || priority === "URGENT") query.priority = priority
+                if(priority === "LOW" || 
+                    priority === "HIGH" || 
+                    priority === "MEDIUM" || 
+                    priority === "URGENT"
+                ) query.priority = priority
 
                 if(search && typeof search === "string") {
                     query.OR = [
