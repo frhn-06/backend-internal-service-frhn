@@ -80,6 +80,26 @@ const categoryController = {
     },
 
 
+    findByDepartment: async(req:IreqUser, res: Response) => {
+        try{
+            const {id} = req.params;
+            const idNumber = Number(id);
+            if(!id || Number.isNaN(idNumber)) return response.notFound(res, "Category tidak ditemukan")
+
+            const query : Prisma.CategoryWhereInput= {
+                departmentId: idNumber,
+                isActive: true
+            }
+
+            const result = await CategoryService.findAll(query, 1, 100);
+
+            response.success(res, result, "Success to find categories by department")
+        }catch(error) {
+            return response.error(res, error, "Failed to find categories by department");
+        }
+    },
+
+
     findById: async (req:IreqUser, res: Response) => {
         try {
             const {id} = req.params;
