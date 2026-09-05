@@ -11,7 +11,7 @@ categoryRoute.post("/", [authMiddleware, roleMiddleware([UserRole.ADMIN])], cate
 
 categoryRoute.get("/", [authMiddleware, roleMiddleware([UserRole.ADMIN, UserRole.AGENT, UserRole.EMPLOYEE])], categoryController.findAll);
 
-categoryRoute.get("/find/by-department", [authMiddleware, roleMiddleware([UserRole.ADMIN, UserRole.AGENT, UserRole.EMPLOYEE])], categoryController.findByDepartment);
+categoryRoute.get("/:id/by-department", [authMiddleware, roleMiddleware([UserRole.ADMIN, UserRole.AGENT, UserRole.EMPLOYEE])], categoryController.findByDepartment);
 
 categoryRoute.get("/:id", [authMiddleware, roleMiddleware([UserRole.ADMIN, UserRole.AGENT, UserRole.EMPLOYEE])], categoryController.findById);
 
