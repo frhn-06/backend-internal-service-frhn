@@ -72,6 +72,32 @@ const TicketService = {
                     ...(query && {
                         ...query
                     })
+                },
+                include: {
+                    department: {
+                        select: {
+                            id: true,
+                            name: true
+                        }
+                    },
+                    category: {
+                        select: {
+                            id: true,
+                            name: true
+                        }
+                    },
+                    agent: {
+                        select: {
+                            id: true,
+                            name: true
+                        }
+                    },
+                    employee: {
+                        select: {
+                            id: true,
+                            name: true
+                        }
+                    },
                 }
             })
         } catch (error) {
