@@ -53,7 +53,7 @@ const TicketService = {
                     }
                 },
                 orderBy: {
-                    createdAt: "asc"
+                    createdAt: "desc"
                 },
                 take: limit,
                 skip: (page - 1) * limit

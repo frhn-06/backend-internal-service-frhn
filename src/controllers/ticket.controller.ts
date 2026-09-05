@@ -5,7 +5,7 @@ import { TicketDTO } from "../validations/ticket.validation.js";
 import DepartmentService from "../services/department.service.js";
 import CategoryService from "../services/category.service.js";
 import TicketService from "../services/ticket.service.js";
-import { PriorityTicket, Prisma, StatusTicket, UserRole } from "../generated/prisma/client.js";
+import { Prisma, StatusTicket, UserRole } from "../generated/prisma/client.js";
 import UserService from "../services/user.service.js";
 
 
