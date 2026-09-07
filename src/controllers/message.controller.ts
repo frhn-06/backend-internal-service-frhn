@@ -12,11 +12,12 @@ const messageController = {
             if(!userId || Number.isNaN(userId)) return response.notFound(res, "User tidak ditemukan");
 
             const {id} = req.params;
+            if(!id) return response.notFound(res, "Ticket tidak ditemukan");
             const idNumber = Number(id);
-            if(!id || Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
+            if(Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
 
             const ticket = await TicketService.findById(idNumber);
-            if(!ticket || ticket.agentId === null) return response.notFound(res, "Ticket tidak ditemukan");
+            if(!ticket) return response.notFound(res, "Ticket tidak ditemukan");
 
             const validate = MessageDTO.parse(req.body);
 
