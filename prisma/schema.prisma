@@ -21,6 +21,7 @@ model User {
   
   employeeTickets     Ticket[]    @relation("EmployeeTickets")
   agentTickets        Ticket[]    @relation("AgentTickets")
+  messages            Message[]
 
   @@index([role, departmentId])
 }
@@ -84,6 +85,8 @@ model Ticket {
   closedAt          DateTime?
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
+
+  messages          Message[]
   
   
   @@index([employeeId])
@@ -91,6 +94,29 @@ model Ticket {
   @@index([departmentId])
   @@index([categoryId])
 }
+
+
+
+
+
+model Message {
+  id                Int             @id @default(autoincrement())
+  content           String
+
+  senderId          Int
+  ticketId          Int
+
+  sender            User            @relation(fields: [senderId], references: [id], onDelete: Restrict)
+  ticket            Ticket          @relation(fields: [ticketId], references: [id], onDelete: Restrict)
+
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([senderId])
+  @@index([ticketId])
+}
+
+
 
 enum UserRole {
   ADMIN

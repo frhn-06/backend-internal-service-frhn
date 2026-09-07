@@ -37,3 +37,8 @@ export type Category = Prisma.CategoryModel
  * 
  */
 export type Ticket = Prisma.TicketModel
+/**
+ * Model Message
+ * 
+ */
+export type Message = Prisma.MessageModel
