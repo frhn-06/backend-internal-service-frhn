@@ -23,6 +23,7 @@ export const StatusTicket = {
   IN_PROGRESS: 'IN_PROGRESS',
   WAITING: 'WAITING',
   RESOLVED: 'RESOLVED',
+  RE_PROGRESS: 'RE_PROGRESS',
   CLOSED: 'CLOSED',
   CANCELLED: 'CANCELLED'
 } as const

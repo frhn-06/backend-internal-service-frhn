@@ -359,7 +359,7 @@ const ticketController = {
         }
     },
 
-    reProgress: async (req:IReqUserPlusTicket, res:Response) => {
+    nextProgress: async (req:IReqUserPlusTicket, res:Response) => {
         try {
             const userId = req.user?.id;
             const userIdNumber = Number(userId);
@@ -391,7 +391,7 @@ const ticketController = {
         }
     },
 
-    reOpen: async (req:IReqUserPlusTicket, res:Response) => {
+    reProgress: async (req:IReqUserPlusTicket, res:Response) => {
         try {
             const userId = req.user?.id;
             const userIdNumber = Number(userId);
@@ -412,7 +412,7 @@ const ticketController = {
             
 
              const data :Prisma.TicketUpdateInput = {
-                status: StatusTicket.IN_PROGRESS,
+                status: StatusTicket.RE_PROGRESS,
             }
             const result = await TicketService.update(idNumber, data);
 

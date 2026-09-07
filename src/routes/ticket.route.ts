@@ -25,26 +25,26 @@ ticketRoute.patch("/:id/take", [
 ticketRoute.patch("/:id/wait", [
     authMiddleware, 
     roleMiddleware([UserRole.AGENT]), 
-    statusTicketMiddleware([StatusTicket.IN_PROGRESS])
+    statusTicketMiddleware([StatusTicket.IN_PROGRESS, StatusTicket.RE_PROGRESS])
 ], ticketController.waiting);
 
 ticketRoute.patch("/:id/resolve", [
     authMiddleware, 
     roleMiddleware([UserRole.AGENT]), 
-    statusTicketMiddleware([StatusTicket.IN_PROGRESS, StatusTicket.WAITING])
+    statusTicketMiddleware([StatusTicket.IN_PROGRESS, StatusTicket.RE_PROGRESS, StatusTicket.WAITING])
 ], ticketController.resolved);
 
-ticketRoute.patch("/:id/re_progress", [
+ticketRoute.patch("/:id/next_progress", [
     authMiddleware, 
     roleMiddleware([UserRole.AGENT]), 
     statusTicketMiddleware([StatusTicket.WAITING])
-], ticketController.reProgress);
+], ticketController.nextProgress);
 
-ticketRoute.patch("/:id/re_open", [
+ticketRoute.patch("/:id/re_progress", [
     authMiddleware, 
     roleMiddleware([UserRole.EMPLOYEE]), 
     statusTicketMiddleware([StatusTicket.RESOLVED])
-], ticketController.reOpen);
+], ticketController.reProgress);
 
 ticketRoute.patch("/:id/close", [
     authMiddleware, 
@@ -55,7 +55,7 @@ ticketRoute.patch("/:id/close", [
 ticketRoute.patch("/:id/cancel", [
     authMiddleware, 
     roleMiddleware([UserRole.EMPLOYEE]), 
-    statusTicketMiddleware([StatusTicket.OPEN, StatusTicket.IN_PROGRESS, StatusTicket.WAITING])
+    statusTicketMiddleware([StatusTicket.OPEN, StatusTicket.IN_PROGRESS, StatusTicket.RE_PROGRESS, StatusTicket.WAITING])
 ], ticketController.cancelled);
 
 
