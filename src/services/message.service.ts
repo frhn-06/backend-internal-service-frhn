@@ -22,6 +22,15 @@ const MessageService = {
             return await prisma.message.findMany({
                 where: {
                     ticketId
+                },
+                include: {
+                    sender: {
+                        select: {
+                            id: true,
+                            name: true,
+                            role: true
+                        }
+                    }
                 }
             })
         } catch(error) {
