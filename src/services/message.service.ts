@@ -30,6 +30,14 @@ const MessageService = {
                             name: true,
                             role: true
                         }
+                    },
+                    ticket: {
+                        select: {
+                            id: true,
+                            title: true,
+                            status: true,
+                            priority: true
+                        }
                     }
                 }
             })
