@@ -5,6 +5,7 @@ import roleMiddleware from '../middlewares/role.middleware.js';
 import { StatusTicket, UserRole } from '../generated/prisma/enums.js';
 import statusTicketMiddleware from '../middlewares/status.ticket.middleware.js';
 import messageController from '../controllers/message.controller.js';
+import aiController from '../controllers/ai.controller.js';
 
 const ticketRoute = express.Router();
 
@@ -70,6 +71,16 @@ messageController.create);
 
 
 ticketRoute.get("/:id/message", [authMiddleware], messageController.findMany);
+
+
+
+
+ticketRoute.post("/:id/ai/reply", [authMiddleware, roleMiddleware([UserRole.AGENT]), statusTicketMiddleware([
+    StatusTicket.OPEN,
+    StatusTicket.IN_PROGRESS,
+    StatusTicket.WAITING,
+    StatusTicket.RE_PROGRESS
+])], aiController.generate)
 
 
 

@@ -106,6 +106,37 @@ const TicketService = {
     },
 
 
+    findByIdWithMessages: async(id: number, query?: Prisma.TicketWhereInput) => {
+        try {
+            return await prisma.ticket.findFirst({
+                where: {
+                    id,
+                    ...(query && {...query})
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    description: true,
+                    messages: {
+                        select: {
+                            content: true,
+                            sender: {
+                                select: {
+                                    name: true,
+                                    role: true
+                                }
+                            },
+                            createdAt: true
+                        }
+                    }
+                }
+            })
+        } catch(error) {
+            throw error;
+        }
+    },
+
+
 
     update: async(id: number, data: Prisma.TicketUpdateInput) => {
         try {
