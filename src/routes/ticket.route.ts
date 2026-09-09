@@ -4,6 +4,7 @@ import ticketController from '../controllers/ticket.controller.js';
 import roleMiddleware from '../middlewares/role.middleware.js';
 import { StatusTicket, UserRole } from '../generated/prisma/enums.js';
 import statusTicketMiddleware from '../middlewares/status.ticket.middleware.js';
+import messageController from '../controllers/message.controller.js';
 
 const ticketRoute = express.Router();
 
@@ -57,6 +58,19 @@ ticketRoute.patch("/:id/cancel", [
     roleMiddleware([UserRole.EMPLOYEE]), 
     statusTicketMiddleware([StatusTicket.OPEN, StatusTicket.IN_PROGRESS, StatusTicket.RE_PROGRESS, StatusTicket.WAITING])
 ], ticketController.cancelled);
+
+
+
+ticketRoute.post("/:id/message", [authMiddleware, statusTicketMiddleware([
+    StatusTicket.OPEN,
+    StatusTicket.IN_PROGRESS, 
+    StatusTicket.WAITING, 
+    StatusTicket.RE_PROGRESS,])],
+messageController.create);
+
+
+ticketRoute.get("/:id/message", [authMiddleware], messageController.findMany);
+
 
 
 export default ticketRoute;
