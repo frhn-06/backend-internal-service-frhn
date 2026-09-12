@@ -39,3 +39,18 @@ export const PriorityTicket = {
 } as const
 
 export type PriorityTicket = (typeof PriorityTicket)[keyof typeof PriorityTicket]
+
+
+export const NotificationType = {
+  TICKET_CREATED: 'TICKET_CREATED',
+  TICKET_TAKEN: 'TICKET_TAKEN',
+  TICKET_WAITING: 'TICKET_WAITING',
+  TICKET_IN_PROGRESS: 'TICKET_IN_PROGRESS',
+  TICKET_RESOLVED: 'TICKET_RESOLVED',
+  TICKET_REOPENED: 'TICKET_REOPENED',
+  TICKET_CLOSED: 'TICKET_CLOSED',
+  TICKET_CANCELLED: 'TICKET_CANCELLED',
+  MESSAGE_RECEIVED: 'MESSAGE_RECEIVED'
+} as const
+
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]

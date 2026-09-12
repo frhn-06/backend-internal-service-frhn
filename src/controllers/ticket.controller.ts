@@ -5,8 +5,9 @@ import { TicketDTO } from "../validations/ticket.validation.js";
 import DepartmentService from "../services/department.service.js";
 import CategoryService from "../services/category.service.js";
 import TicketService from "../services/ticket.service.js";
-import { Prisma, StatusTicket, UserRole } from "../generated/prisma/client.js";
+import { NotificationType, Prisma, StatusTicket, UserRole } from "../generated/prisma/client.js";
 import UserService from "../services/user.service.js";
+import NotificationService from "../services/notification.service.js";
 
 
 
@@ -33,9 +34,28 @@ const ticketController = {
             const category = await CategoryService.findByQuery(query);
             if(!category) return response.notFound(res, "Category tidak ditemukan");
 
-           
             const result = await TicketService.create(idNumber, validate);
 
+
+            // notification
+            const agents = await UserService.findAllForNotification({
+                isActive: true,
+                departmentId: result.departmentId
+            });
+
+            await Promise.all(agents.map((agent) => {
+                return NotificationService.create({
+                    targetId: agent.id,
+                    actorId: result.employeeId,
+                    type: NotificationType.TICKET_CREATED,
+                    ticketId: result.id,
+                    title: "Tiket dibuat",
+                    message: `Ticket dibuat oleh ${result.employee.name}`
+                })
+            }))
+            // notification
+
+            // response
             response.success(res, result, "Success to create ticket")
             
         } catch(error) {
@@ -289,6 +309,19 @@ const ticketController = {
             }
             const result = await TicketService.update(idNumber, data);
 
+
+            // notification
+            await NotificationService.create({
+                targetId: ticket.employeeId,
+                actorId: user.id!,
+                ticketId: ticket.id,
+                title: "Ticket diambil",
+                message: `Ticket diambil oleh ${user.name}`,
+                type: NotificationType.TICKET_TAKEN
+            })
+            // notification
+
+
             response.success(res, result, "Success to change tickets status to in progress")
 
         } catch(error) {
@@ -319,6 +352,17 @@ const ticketController = {
                 status: StatusTicket.WAITING
             }
             const result = await TicketService.update(idNumber, data);
+
+            // notification
+            await NotificationService.create({
+                targetId: ticket.employeeId,
+                actorId: user.id!,
+                ticketId: ticket.id,
+                title: "Ticket ditunggu",
+                message: `Tiket sedang menunggu respons dari ${user.name}`,
+                type: NotificationType.TICKET_WAITING
+            })
+            // notification
 
             response.success(res, result, "Success to change tickets status to in waiting")
 
@@ -352,6 +396,17 @@ const ticketController = {
             }
             const result = await TicketService.update(idNumber, data);
 
+            // notification
+            await NotificationService.create({
+                targetId: ticket.employeeId,
+                actorId: user.id!,
+                ticketId: ticket.id,
+                title: "Ticket selesai",
+                message: `Tiket diselesaikan oleh ${user.name}`,
+                type: NotificationType.TICKET_RESOLVED
+            })
+            // notification
+
             response.success(res, result, "Success to change tickets status to in resolved")
 
         } catch(error) {
@@ -383,6 +438,17 @@ const ticketController = {
                 status: StatusTicket.IN_PROGRESS,
             }
             const result = await TicketService.update(idNumber, data);
+
+            // notification
+            await NotificationService.create({
+                targetId: ticket.employeeId,
+                actorId: user.id!,
+                ticketId: ticket.id,
+                title: "Ticket diproses",
+                message: `Ticket diproses oleh ${user.name}`,
+                type: NotificationType.TICKET_REOPENED
+            })
+            // notification
 
             response.success(res, result, "Success to change tickets status to in closed")
 
@@ -416,6 +482,17 @@ const ticketController = {
             }
             const result = await TicketService.update(idNumber, data);
 
+            // notification
+            await NotificationService.create({
+                targetId: ticket.agentId!,
+                actorId: ticket.employeeId,
+                ticketId: ticket.id,
+                title: "Ticket dibuka lagi",
+                message: `${user.name} membuka kembali ticket ini`,
+                type: NotificationType.TICKET_IN_PROGRESS
+            })
+            // notification
+
             response.success(res, result, "Success to change tickets status to in closed")
 
         } catch(error) {
@@ -448,6 +525,17 @@ const ticketController = {
             }
             const result = await TicketService.update(idNumber, data);
 
+            // notification
+            await NotificationService.create({
+                targetId: ticket.agentId!,
+                actorId: ticket.employeeId,
+                ticketId: ticket.id,
+                title: "Ticket ditutup",
+                message: `${user.name} menutup ticket ini`,
+                type: NotificationType.TICKET_CLOSED
+            })
+            // notification
+
             response.success(res, result, "Success to change tickets status to in closed")
 
         } catch(error) {
@@ -478,6 +566,36 @@ const ticketController = {
                 status: StatusTicket.CANCELLED
             }
             const result = await TicketService.update(idNumber, data);
+
+
+            // notiifcation
+            if(ticket.agentId) {
+                await NotificationService.create({
+                    targetId: ticket.agentId!,
+                    actorId: ticket.employeeId,
+                    ticketId: ticket.id,
+                    title: "Ticket dibatalkan",
+                    message: `${user.name} membatalkan ticket ini`,
+                    type: NotificationType.TICKET_CANCELLED
+                })
+            } else {
+                const agents = await UserService.findAllForNotification({
+                    isActive: true,
+                    departmentId: ticket.departmentId
+                });
+
+                await Promise.all(agents.map((agent) => 
+                    NotificationService.create({
+                        targetId: agent.id!,
+                        actorId: ticket.employeeId,
+                        ticketId: ticket.id,
+                        title: "Ticket dibatalkan",
+                        message: `${user.name} membatalkan ticket ini`,
+                        type: NotificationType.TICKET_CANCELLED
+                    })
+                ))
+            }
+            // notification
 
             response.success(res, result, "Success to change tickets status to in cancelled")
 

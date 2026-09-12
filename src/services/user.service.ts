@@ -55,6 +55,22 @@ const UserService = {
         }
     },
 
+
+    findAllForNotification: async(query: Prisma.UserWhereInput) => {
+        try {
+            return await prisma.user.findMany({
+                where: query,
+                select: {
+                    id: true,
+                    name: true,
+                    departmentId: true
+                }
+            })
+        } catch(error) {
+            throw error
+        }
+    },
+
     delete: async(id: number) => {
         try {
             return await prisma.user.delete({

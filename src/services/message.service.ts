@@ -10,6 +10,13 @@ const MessageService = {
                     content: data.content,
                     ticketId: ticketId,
                     senderId: senderId
+                },
+                include: {
+                    sender: {
+                        select: {
+                            name: true
+                        }
+                    }
                 }
             })
         } catch(error) {

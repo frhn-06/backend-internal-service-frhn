@@ -13,6 +13,13 @@ const TicketService = {
                     ...data,
                     number,
                     employeeId
+                },
+                include: {
+                    employee: {
+                        select: {
+                            name: true
+                        }
+                    }
                 }
             })
         }catch(error) {

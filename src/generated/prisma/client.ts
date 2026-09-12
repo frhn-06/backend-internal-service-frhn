@@ -66,3 +66,8 @@ export type Ticket = Prisma.TicketModel
  * 
  */
 export type Message = Prisma.MessageModel
+/**
+ * Model Notification
+ * 
+ */
+export type Notification = Prisma.NotificationModel

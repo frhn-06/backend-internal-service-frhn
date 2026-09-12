@@ -4,6 +4,8 @@ import response from "../utils/response.js";
 import TicketService from "../services/ticket.service.js";
 import { MessageDTO } from "../validations/message.validation.js";
 import MessageService from "../services/message.service.js";
+import NotificationService from "../services/notification.service.js";
+import { NotificationType } from "../generated/prisma/enums.js";
 
 const messageController = {
     create: async(req:IReqUserPlusTicket, res:Response) => {
@@ -22,6 +24,25 @@ const messageController = {
             const validate = MessageDTO.parse(req.body);
 
             const result = await MessageService.create(userId, ticket.id, validate);
+
+            // notification
+            let targetId: number;
+            if(req.user?.role === "AGENT") {
+                targetId = ticket.employeeId;
+            } else {
+                if(!ticket.agentId) return response.notFound(res, "Agent tidak ditemukan");
+                targetId = ticket.agentId
+            }
+            await NotificationService.create({
+                type: NotificationType.MESSAGE_RECEIVED,
+                title: "Pesan baru",
+                message: `Pesan baru dari ${result.sender.name}`,
+                actorId: userId,
+                targetId: targetId,
+                ticketId: ticket.id
+            })
+
+            // notification
 
             response.success(res, result, "Success to send message");
 

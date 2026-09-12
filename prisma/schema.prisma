@@ -22,6 +22,8 @@ model User {
   employeeTickets     Ticket[]    @relation("EmployeeTickets")
   agentTickets        Ticket[]    @relation("AgentTickets")
   messages            Message[]
+  notifications       Notification[]  @relation("NotificationRecipient")
+  actorNotifications  Notification[]  @relation("NotificationActor")
 
   @@index([role, departmentId])
 }
@@ -87,6 +89,7 @@ model Ticket {
   updatedAt         DateTime        @updatedAt
 
   messages          Message[]
+  notifications     Notification[]
   
   
   @@index([employeeId])
@@ -118,6 +121,30 @@ model Message {
 
 
 
+
+model Notification {
+  id                Int               @id @default(autoincrement())
+  targetId          Int
+  actorId           Int?
+  ticketId          Int?
+  type              NotificationType
+  title             String
+  message           String
+  isRead            Boolean           @default(false)
+
+  target            User              @relation("NotificationRecipient", fields: [targetId], references: [id], onDelete: Cascade)
+  actor             User?             @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
+  ticket            Ticket?           @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+
+  createdAt         DateTime          @default(now())
+  
+  @@index([targetId, isRead])
+  @@index([ticketId])
+  @@index([createdAt])
+}
+
+
+
 enum UserRole {
   ADMIN
   AGENT
@@ -142,4 +169,18 @@ enum PriorityTicket {
   MEDIUM
   HIGH
   URGENT
+}
+
+
+
+enum NotificationType {
+  TICKET_CREATED
+  TICKET_TAKEN
+  TICKET_WAITING
+  TICKET_IN_PROGRESS
+  TICKET_RESOLVED
+  TICKET_REOPENED
+  TICKET_CLOSED
+  TICKET_CANCELLED
+  MESSAGE_RECEIVED
 }
