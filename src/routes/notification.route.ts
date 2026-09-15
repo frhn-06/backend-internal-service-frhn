@@ -1,8 +1,6 @@
 import express from 'express'
 import authMiddleware from '../middlewares/auth.middleware.js';
 import notificationController from '../controllers/notification.controller.js';
-import statusTicketMiddleware from '../middlewares/status.ticket.middleware.js';
-import { StatusTicket } from '../generated/prisma/enums.js';
 
 const notificationRoute = express.Router();
 

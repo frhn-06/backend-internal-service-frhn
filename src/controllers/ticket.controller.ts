@@ -13,17 +13,17 @@ import NotificationService from "../services/notification.service.js";
 
 
 const ticketController = {
-    create: async(req:IreqUser, res:Response) => {
+    create: async (req: IreqUser, res: Response) => {
         try {
             const id = req.user?.id;
-            if(!id) return response.notFound(res, "Employee tidak ditemukan");
+            if (!id) return response.notFound(res, "Employee tidak ditemukan");
             const idNumber = Number(id);
-            if(Number.isNaN(idNumber)) return response.notFound(res, "Employee tidak ditemukan");
+            if (Number.isNaN(idNumber)) return response.notFound(res, "Employee tidak ditemukan");
 
             const validate = TicketDTO.parse(req.body);
 
             const department = await DepartmentService.findById(validate.departmentId);
-            if(!department) return response.notFound(res, "Department tidak ditemukan");
+            if (!department) return response.notFound(res, "Department tidak ditemukan");
 
             const query = {
                 id: validate.categoryId,
@@ -32,7 +32,7 @@ const ticketController = {
             }
 
             const category = await CategoryService.findByQuery(query);
-            if(!category) return response.notFound(res, "Category tidak ditemukan");
+            if (!category) return response.notFound(res, "Category tidak ditemukan");
 
             const result = await TicketService.create(idNumber, validate);
 
@@ -57,20 +57,20 @@ const ticketController = {
 
             // response
             response.success(res, result, "Success to create ticket")
-            
-        } catch(error) {
+
+        } catch (error) {
             response.error(res, error, "Failed to create ticket");
         }
     },
 
 
-    findByRole: async(req:IreqUser, res:Response) => {
+    findByRole: async (req: IreqUser, res: Response) => {
         try {
             const id = req.user?.id;
-            if(!id) return response.notFound(res, "User tidak ditemukan");            
+            if (!id) return response.notFound(res, "User tidak ditemukan");
 
             const role = req.user?.role;
-            if(!role) return response.notFound(res, "User tidak ditemukan");
+            if (!role) return response.notFound(res, "User tidak ditemukan");
 
             const {
                 page = 1,
@@ -82,27 +82,27 @@ const ticketController = {
 
             const numberPage = Number(page);
             const numberLimit = Number(limit);
-            if(Number.isNaN(numberPage) || Number.isNaN(numberLimit)) return response.notFound(res, "Tickets tidak ditemukan")
-            
+            if (Number.isNaN(numberPage) || Number.isNaN(numberLimit)) return response.notFound(res, "Tickets tidak ditemukan")
+
 
             const user = await UserService.getUserById(id);
-            if(!user) return response.notFound(res, "User tidak ditemukan");
-           
+            if (!user) return response.notFound(res, "User tidak ditemukan");
+
             const setQuery = () => {
-                let query : Prisma.TicketWhereInput = {};
+                let query: Prisma.TicketWhereInput = {};
 
 
-                if(role === UserRole.AGENT) {
-                    if(!user.departmentId) {
+                if (role === UserRole.AGENT) {
+                    if (!user.departmentId) {
                         throw Error("Agent tidak memiliki department");
                     }
 
                     query.agentId = user.id;
                 }
 
-                if(role === UserRole.EMPLOYEE) query.employeeId = id
+                if (role === UserRole.EMPLOYEE) query.employeeId = id
 
-                if(status === "OPEN" || 
+                if (status === "OPEN" ||
                     status === "IN_PROGRESS" ||
                     status === "WAITING" ||
                     status === "RESOLVED" ||
@@ -110,19 +110,19 @@ const ticketController = {
                     status === "CANCELLED"
                 ) query.status = status
 
-                if(priority === "LOW" || 
-                    priority === "HIGH" || 
-                    priority === "MEDIUM" || 
+                if (priority === "LOW" ||
+                    priority === "HIGH" ||
+                    priority === "MEDIUM" ||
                     priority === "URGENT"
                 ) query.priority = priority
 
-                if(search && typeof search === "string") {
+                if (search && typeof search === "string") {
                     query.OR = [
                         {
                             title: {
                                 contains: search,
                                 mode: "insensitive"
-                            } 
+                            }
                         },
                         {
                             number: {
@@ -134,7 +134,7 @@ const ticketController = {
                 }
 
                 return query;
-            }   
+            }
 
             const query = setQuery()
 
@@ -149,19 +149,19 @@ const ticketController = {
             }, "Success to find tickets")
 
 
-        } catch(error) {
+        } catch (error) {
             response.error(res, error, "Failed to find tickets");
         }
     },
 
 
-    findByDepartment: async(req:IreqUser, res:Response) => {
+    findByDepartment: async (req: IreqUser, res: Response) => {
         try {
             const id = req.user?.id;
-            if(!id) return response.notFound(res, "User tidak ditemukan");            
+            if (!id) return response.notFound(res, "User tidak ditemukan");
 
             const role = req.user?.role;
-            if(!role) return response.notFound(res, "User tidak ditemukan");
+            if (!role) return response.notFound(res, "User tidak ditemukan");
 
             const {
                 page = 1,
@@ -173,19 +173,19 @@ const ticketController = {
 
             const numberPage = Number(page);
             const numberLimit = Number(limit);
-            if(Number.isNaN(numberPage) || Number.isNaN(numberLimit)) return response.notFound(res, "Tickets tidak ditemukan")
-            
+            if (Number.isNaN(numberPage) || Number.isNaN(numberLimit)) return response.notFound(res, "Tickets tidak ditemukan")
+
 
             const user = await UserService.getUserById(id);
-            if(!user) return response.notFound(res, "User tidak ditemukan");
-            if(!user.departmentId) return response.error(res, false, "Agent belum memiliki department");
-           
+            if (!user) return response.notFound(res, "User tidak ditemukan");
+            if (!user.departmentId) return response.error(res, false, "Agent belum memiliki department");
+
             const setQuery = () => {
-                let query : Prisma.TicketWhereInput = {
+                let query: Prisma.TicketWhereInput = {
                     departmentId: user.departmentId as unknown as Prisma.IntFilter<"Ticket">
                 };
 
-                if(status === "OPEN" || 
+                if (status === "OPEN" ||
                     status === "IN_PROGRESS" ||
                     status === "WAITING" ||
                     status === "RESOLVED" ||
@@ -193,19 +193,19 @@ const ticketController = {
                     status === "CANCELLED"
                 ) query.status = status
 
-                if(priority === "LOW" || 
-                    priority === "HIGH" || 
-                    priority === "MEDIUM" || 
+                if (priority === "LOW" ||
+                    priority === "HIGH" ||
+                    priority === "MEDIUM" ||
                     priority === "URGENT"
                 ) query.priority = priority
 
-                if(search && typeof search === "string") {
+                if (search && typeof search === "string") {
                     query.OR = [
                         {
                             title: {
                                 contains: search,
                                 mode: "insensitive"
-                            } 
+                            }
                         },
                         {
                             number: {
@@ -217,7 +217,7 @@ const ticketController = {
                 }
 
                 return query;
-            }   
+            }
 
             const query = setQuery()
 
@@ -232,34 +232,34 @@ const ticketController = {
             }, "Success to find tickets")
 
 
-        } catch(error) {
+        } catch (error) {
             response.error(res, error, "Failed to find tickets");
         }
     },
 
 
-    findById: async(req:IreqUser, res:Response) => {
+    findById: async (req: IreqUser, res: Response) => {
         try {
             const userId = req.user?.id;
             const userIdNumber = Number(userId);
-            if(!userId || Number.isNaN(userIdNumber)) return response.notFound(res, "User tidak ditemukan");
-            const {id} = req.params;
-            if(!id) return response.notFound(res, "Ticket tidak ditemukan");
+            if (!userId || Number.isNaN(userIdNumber)) return response.notFound(res, "User tidak ditemukan");
+            const { id } = req.params;
+            if (!id) return response.notFound(res, "Ticket tidak ditemukan");
             const idNumber = Number(id);
-            if(Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
+            if (Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
 
             const role = req.user?.role;
 
             const user = await UserService.getUserById(userIdNumber);
-            if(!user) return response.notFound(res, "User tidak ditemukan")
+            if (!user) return response.notFound(res, "User tidak ditemukan")
 
             const setQuery = () => {
-                let query : Prisma.TicketWhereInput = {}
+                let query: Prisma.TicketWhereInput = {}
 
-                if(role === UserRole.EMPLOYEE) query.employeeId = userIdNumber;
+                if (role === UserRole.EMPLOYEE) query.employeeId = userIdNumber;
 
-                if(role === UserRole.AGENT) {
-                    if(!user.departmentId) throw Error("Agent tidak memiliki department");
+                if (role === UserRole.AGENT) {
+                    if (!user.departmentId) throw Error("Agent tidak memiliki department");
                     query.departmentId = user.departmentId
                 }
 
@@ -267,38 +267,38 @@ const ticketController = {
             }
 
             const query = setQuery()
-            
+
             const result = await TicketService.findById(idNumber, query);
-            if(!result) return response.notFound(res, "Ticket tidak ditemukan");
+            if (!result) return response.notFound(res, "Ticket tidak ditemukan");
 
             response.success(res, result, "Success to find a ticket")
-        } catch(error) {
-            response.error(res, error, "Failed to find a ticket");    
+        } catch (error) {
+            response.error(res, error, "Failed to find a ticket");
         }
     },
 
 
 
-    take: async(req: IReqUserPlusTicket, res:Response) => {
+    take: async (req: IReqUserPlusTicket, res: Response) => {
         try {
             const userId = req.user?.id;
             const userIdNumber = Number(userId);
-            if(!userId || Number.isNaN(userIdNumber)) return response.notFound(res, "User tidak ditemukan");
+            if (!userId || Number.isNaN(userIdNumber)) return response.notFound(res, "User tidak ditemukan");
 
             const ticket = req.ticket;
-            if(!ticket) return response.notFound(res, "Ticket tidak ditemukan");
+            if (!ticket) return response.notFound(res, "Ticket tidak ditemukan");
 
-            const {id} = req.params;
-            if(!id) return response.notFound(res, "Ticket tidak ditemukan");
+            const { id } = req.params;
+            if (!id) return response.notFound(res, "Ticket tidak ditemukan");
             const idNumber = Number(id);
-            if(Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
+            if (Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
 
             const user = await UserService.getUserById(userIdNumber);
-            if(!user || !user.departmentId) return response.forbidden(res);
+            if (!user || !user.departmentId) return response.forbidden(res);
 
-            if(user.departmentId !== ticket.departmentId) return response.forbidden(res);
+            if (user.departmentId !== ticket.departmentId) return response.forbidden(res);
 
-            const data : Prisma.TicketUpdateInput = {
+            const data: Prisma.TicketUpdateInput = {
                 status: StatusTicket.IN_PROGRESS,
                 assignedAt: new Date(),
                 agent: {
@@ -324,31 +324,31 @@ const ticketController = {
 
             response.success(res, result, "Success to change tickets status to in progress")
 
-        } catch(error) {
+        } catch (error) {
             response.error(res, error, "Failed to change tickets status to in progress");
         }
     },
 
-    waiting: async(req: IReqUserPlusTicket, res:Response) => {
+    waiting: async (req: IReqUserPlusTicket, res: Response) => {
         try {
             const userId = req.user?.id;
             const userIdNumber = Number(userId);
-            if(!userId || Number.isNaN(userIdNumber)) return response.notFound(res, "User tidak ditemukan");
+            if (!userId || Number.isNaN(userIdNumber)) return response.notFound(res, "User tidak ditemukan");
 
             const ticket = req.ticket;
-            if(!ticket) return response.notFound(res, "Ticket tidak ditemukan");
+            if (!ticket) return response.notFound(res, "Ticket tidak ditemukan");
 
-            const {id} = req.params;
-            if(!id) return response.notFound(res, "Ticket tidak ditemukan");
+            const { id } = req.params;
+            if (!id) return response.notFound(res, "Ticket tidak ditemukan");
             const idNumber = Number(id);
-            if(Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
+            if (Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
 
             const user = await UserService.getUserById(userIdNumber);
-            if(!user || !user.departmentId) return response.forbidden(res);
+            if (!user || !user.departmentId) return response.forbidden(res);
 
-            if(user.departmentId !== ticket.departmentId) return response.forbidden(res);
+            if (user.departmentId !== ticket.departmentId) return response.forbidden(res);
 
-            const data :Prisma.TicketUpdateInput = {
+            const data: Prisma.TicketUpdateInput = {
                 status: StatusTicket.WAITING
             }
             const result = await TicketService.update(idNumber, data);
@@ -366,31 +366,31 @@ const ticketController = {
 
             response.success(res, result, "Success to change tickets status to in waiting")
 
-        } catch(error) {
+        } catch (error) {
             response.error(res, error, "Failed to change tickets status to in waiting");
         }
     },
 
-    resolved: async(req: IReqUserPlusTicket, res:Response) => {
+    resolved: async (req: IReqUserPlusTicket, res: Response) => {
         try {
             const userId = req.user?.id;
             const userIdNumber = Number(userId);
-            if(!userId || Number.isNaN(userIdNumber)) return response.notFound(res, "User tidak ditemukan");
+            if (!userId || Number.isNaN(userIdNumber)) return response.notFound(res, "User tidak ditemukan");
 
             const ticket = req.ticket;
-            if(!ticket) return response.notFound(res, "Ticket tidak ditemukan");
+            if (!ticket) return response.notFound(res, "Ticket tidak ditemukan");
 
-            const {id} = req.params;
-            if(!id) return response.notFound(res, "Ticket tidak ditemukan");
+            const { id } = req.params;
+            if (!id) return response.notFound(res, "Ticket tidak ditemukan");
             const idNumber = Number(id);
-            if(Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
+            if (Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
 
             const user = await UserService.getUserById(userIdNumber);
-            if(!user || !user.departmentId) return response.forbidden(res);
+            if (!user || !user.departmentId) return response.forbidden(res);
 
-            if(user.departmentId !== ticket.departmentId) return response.forbidden(res);
+            if (user.departmentId !== ticket.departmentId) return response.forbidden(res);
 
-            const data :Prisma.TicketUpdateInput = {
+            const data: Prisma.TicketUpdateInput = {
                 status: StatusTicket.RESOLVED,
                 resolvedAt: new Date()
             }
@@ -409,32 +409,32 @@ const ticketController = {
 
             response.success(res, result, "Success to change tickets status to in resolved")
 
-        } catch(error) {
+        } catch (error) {
             response.error(res, error, "Failed to change tickets status to in resolved");
         }
     },
 
-    nextProgress: async (req:IReqUserPlusTicket, res:Response) => {
+    nextProgress: async (req: IReqUserPlusTicket, res: Response) => {
         try {
             const userId = req.user?.id;
             const userIdNumber = Number(userId);
-            if(!userId || Number.isNaN(userIdNumber)) return response.notFound(res, "User tidak ditemukan");
+            if (!userId || Number.isNaN(userIdNumber)) return response.notFound(res, "User tidak ditemukan");
 
             const ticket = req.ticket;
-            if(!ticket) return response.notFound(res, "Ticket tidak ditemukan");
+            if (!ticket) return response.notFound(res, "Ticket tidak ditemukan");
 
-            const {id} = req.params;
-            if(!id) return response.notFound(res, "Ticket tidak ditemukan");
+            const { id } = req.params;
+            if (!id) return response.notFound(res, "Ticket tidak ditemukan");
             const idNumber = Number(id);
-            if(Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
+            if (Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
 
             const user = await UserService.getUserById(userIdNumber);
-            if(!user || !user.departmentId) return response.forbidden(res);
+            if (!user || !user.departmentId) return response.forbidden(res);
 
-            if(user.departmentId !== ticket.departmentId) return response.forbidden(res);
-            
+            if (user.departmentId !== ticket.departmentId) return response.forbidden(res);
 
-             const data :Prisma.TicketUpdateInput = {
+
+            const data: Prisma.TicketUpdateInput = {
                 status: StatusTicket.IN_PROGRESS,
             }
             const result = await TicketService.update(idNumber, data);
@@ -452,32 +452,32 @@ const ticketController = {
 
             response.success(res, result, "Success to change tickets status to in closed")
 
-        } catch(error) {
+        } catch (error) {
             response.error(res, error, "Failed to change back tickets status to in progress");
         }
     },
 
-    reProgress: async (req:IReqUserPlusTicket, res:Response) => {
+    reProgress: async (req: IReqUserPlusTicket, res: Response) => {
         try {
             const userId = req.user?.id;
             const userIdNumber = Number(userId);
-            if(!userId || Number.isNaN(userIdNumber)) return response.notFound(res, "User tidak ditemukan");
+            if (!userId || Number.isNaN(userIdNumber)) return response.notFound(res, "User tidak ditemukan");
 
             const ticket = req.ticket;
-            if(!ticket) return response.notFound(res, "Ticket tidak ditemukan");
+            if (!ticket) return response.notFound(res, "Ticket tidak ditemukan");
 
-            const {id} = req.params;
-            if(!id) return response.notFound(res, "Ticket tidak ditemukan");
+            const { id } = req.params;
+            if (!id) return response.notFound(res, "Ticket tidak ditemukan");
             const idNumber = Number(id);
-            if(Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
+            if (Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
 
             const user = await UserService.getUserById(userIdNumber);
-            if(!user) return response.notFound(res, "User tidak ditemukan")
+            if (!user) return response.notFound(res, "User tidak ditemukan")
 
-            if(user.id !== ticket.employeeId) return response.forbidden(res);
-            
+            if (user.id !== ticket.employeeId) return response.forbidden(res);
 
-             const data :Prisma.TicketUpdateInput = {
+
+            const data: Prisma.TicketUpdateInput = {
                 status: StatusTicket.RE_PROGRESS,
             }
             const result = await TicketService.update(idNumber, data);
@@ -495,31 +495,31 @@ const ticketController = {
 
             response.success(res, result, "Success to change tickets status to in closed")
 
-        } catch(error) {
+        } catch (error) {
             response.error(res, error, "Failed to change back tickets status to in progress");
         }
     },
 
-    closed: async(req: IReqUserPlusTicket, res:Response) => {
+    closed: async (req: IReqUserPlusTicket, res: Response) => {
         try {
             const userId = req.user?.id;
             const userIdNumber = Number(userId);
-            if(!userId || Number.isNaN(userIdNumber)) return response.notFound(res, "User tidak ditemukan");
+            if (!userId || Number.isNaN(userIdNumber)) return response.notFound(res, "User tidak ditemukan");
 
             const ticket = req.ticket;
-            if(!ticket) return response.notFound(res, "Ticket tidak ditemukan");
+            if (!ticket) return response.notFound(res, "Ticket tidak ditemukan");
 
-            const {id} = req.params;
-            if(!id) return response.notFound(res, "Ticket tidak ditemukan");
+            const { id } = req.params;
+            if (!id) return response.notFound(res, "Ticket tidak ditemukan");
             const idNumber = Number(id);
-            if(Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
+            if (Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
 
             const user = await UserService.getUserById(userIdNumber);
-            if(!user) return response.notFound(res, "User tidak ditemukan")
+            if (!user) return response.notFound(res, "User tidak ditemukan")
 
-            if(user.id !== ticket.employeeId) return response.forbidden(res);
+            if (user.id !== ticket.employeeId) return response.forbidden(res);
 
-            const data :Prisma.TicketUpdateInput = {
+            const data: Prisma.TicketUpdateInput = {
                 status: StatusTicket.CLOSED,
                 closedAt: new Date()
             }
@@ -538,38 +538,38 @@ const ticketController = {
 
             response.success(res, result, "Success to change tickets status to in closed")
 
-        } catch(error) {
+        } catch (error) {
             response.error(res, error, "Failed to change tickets status to in closed");
         }
     },
 
-    cancelled: async(req: IReqUserPlusTicket, res:Response) => {
+    cancelled: async (req: IReqUserPlusTicket, res: Response) => {
         try {
             const userId = req.user?.id;
             const userIdNumber = Number(userId);
-            if(!userId || Number.isNaN(userIdNumber)) return response.notFound(res, "User tidak ditemukan");
+            if (!userId || Number.isNaN(userIdNumber)) return response.notFound(res, "User tidak ditemukan");
 
             const ticket = req.ticket;
-            if(!ticket) return response.notFound(res, "Ticket tidak ditemukan");
+            if (!ticket) return response.notFound(res, "Ticket tidak ditemukan");
 
-            const {id} = req.params;
-            if(!id) return response.notFound(res, "Ticket tidak ditemukan");
+            const { id } = req.params;
+            if (!id) return response.notFound(res, "Ticket tidak ditemukan");
             const idNumber = Number(id);
-            if(Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
+            if (Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
 
             const user = await UserService.getUserById(userIdNumber);
-            if(!user) return response.notFound(res, "User tidak ditemukan")
+            if (!user) return response.notFound(res, "User tidak ditemukan")
 
-            if(user.id !== ticket.employeeId) return response.forbidden(res);
+            if (user.id !== ticket.employeeId) return response.forbidden(res);
 
-            const data :Prisma.TicketUpdateInput = {
+            const data: Prisma.TicketUpdateInput = {
                 status: StatusTicket.CANCELLED
             }
             const result = await TicketService.update(idNumber, data);
 
 
             // notiifcation
-            if(ticket.agentId) {
+            if (ticket.agentId) {
                 await NotificationService.create({
                     targetId: ticket.agentId!,
                     actorId: ticket.employeeId,
@@ -584,7 +584,7 @@ const ticketController = {
                     departmentId: ticket.departmentId
                 });
 
-                await Promise.all(agents.map((agent) => 
+                await Promise.all(agents.map((agent) =>
                     NotificationService.create({
                         targetId: agent.id!,
                         actorId: ticket.employeeId,
@@ -599,7 +599,7 @@ const ticketController = {
 
             response.success(res, result, "Success to change tickets status to in cancelled")
 
-        } catch(error) {
+        } catch (error) {
             response.error(res, error, "Failed to change tickets status to in cancelled");
         }
     },

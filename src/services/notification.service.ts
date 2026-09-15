@@ -34,6 +34,13 @@ const NotificationService = {
                 },
                 orderBy: {
                     createdAt: "desc"
+                },
+                include: {
+                    target: {
+                        select: {
+                            role: true
+                        }
+                    }
                 }
             })
         } catch(error) {
