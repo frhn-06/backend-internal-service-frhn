@@ -85,7 +85,7 @@ const notificationController = {
             })
             if(!result)  return response.notFound(res, "Notification tidak ditemukan");
             
-            response.error(res, result, "Success to read notification by id") 
+            response.success(res, result, "Success to read notification by id") 
         } catch(error) {
             response.error(res, error, "Failed to read notification by id")
         }
@@ -108,7 +108,7 @@ const notificationController = {
                 targetId: userId
             });
 
-            response.error(res, result, "Success to read message notifications") 
+            response.success(res, result, "Success to read message notifications") 
             
         } catch(error) {
             response.error(res, error, "Failed to read message notifications")
