@@ -72,13 +72,15 @@ const NotificationService = {
 
     countMessage: async(userId: number) => {
         try {
-            return await prisma.notification.count({
+            const result = await prisma.notification.groupBy({
+                by: ["ticketId"],
                 where: {
                     targetId: userId,
                     type: NotificationType.MESSAGE_RECEIVED,
                     isRead: false
                 }
             })
+            return result.length;
         } catch(error) {
             throw error
         }
