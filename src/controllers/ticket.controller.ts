@@ -8,6 +8,7 @@ import TicketService from "../services/ticket.service.js";
 import { NotificationType, Prisma, StatusTicket, UserRole } from "../generated/prisma/client.js";
 import UserService from "../services/user.service.js";
 import NotificationService from "../services/notification.service.js";
+import { getIo } from "../socket/index.js";
 
 
 
@@ -54,6 +55,13 @@ const ticketController = {
                 })
             }))
             // notification
+
+            // socket
+            const io = getIo();
+            agents.forEach((agent) => {
+                io.to(`user:${agent.id}`).emit("notification:new")
+            })
+            // socket
 
             // response
             response.success(res, result, "Success to create ticket")
@@ -322,6 +330,15 @@ const ticketController = {
             // notification
 
 
+
+            // socket
+            const io = getIo();
+            io.to(`user:${ticket.employeeId}`).emit("notification:new");
+
+            io.to(`ticket:${ticket.id}`).emit("ticket-status:change");
+            // socket
+
+
             response.success(res, result, "Success to change tickets status to in progress")
 
         } catch (error) {
@@ -359,10 +376,17 @@ const ticketController = {
                 actorId: user.id!,
                 ticketId: ticket.id,
                 title: "Ticket ditunggu",
-                message: `Tiket sedang menunggu respons dari ${user.name}`,
+                message: `Tiket sedang menunggu respons dari Anda`,
                 type: NotificationType.TICKET_WAITING
             })
             // notification
+
+            // socket
+            const io = getIo();
+            io.to(`user:${ticket.employeeId}`).emit("notification:new");
+
+            io.to(`ticket:${ticket.id}`).emit("ticket-status:change");
+            // socket
 
             response.success(res, result, "Success to change tickets status to in waiting")
 
@@ -407,6 +431,17 @@ const ticketController = {
             })
             // notification
 
+            // socket
+            const io = getIo();
+            io.to(`user:${ticket.employeeId}`).emit("notification:new");
+
+            console.log("🔥 STATUS AKAN DI-EMIT:", ticket.id);
+
+            io.to(`ticket:${ticket.id}`).emit("ticket-status:change");
+
+            console.log("🔥 STATUS SUDAH DI-EMIT:", ticket.id);
+            // socket
+
             response.success(res, result, "Success to change tickets status to in resolved")
 
         } catch (error) {
@@ -449,6 +484,12 @@ const ticketController = {
                 type: NotificationType.TICKET_REOPENED
             })
             // notification
+
+            // socket
+            const io = getIo();
+            io.to(`user:${ticket.employeeId}`).emit("notification:new");
+            io.to(`ticket:${ticket.id}`).emit("ticket-status:change");
+            // socket
 
             response.success(res, result, "Success to change tickets status to in closed")
 
@@ -493,6 +534,12 @@ const ticketController = {
             })
             // notification
 
+            // socket
+            const io = getIo();
+            io.to(`user:${ticket.agentId}`).emit("notification:new")
+            io.to(`ticket:${ticket.id}`).emit("ticket-status:change");
+            // socket
+
             response.success(res, result, "Success to change tickets status to in closed")
 
         } catch (error) {
@@ -536,6 +583,12 @@ const ticketController = {
             })
             // notification
 
+            // socket
+            const io = getIo();
+            io.to(`user:${ticket.agentId}`).emit("notification:new");
+            io.to(`ticket:${ticket.id}`).emit("ticket-status:change");
+            // socket
+
             response.success(res, result, "Success to change tickets status to in closed")
 
         } catch (error) {
@@ -567,8 +620,9 @@ const ticketController = {
             }
             const result = await TicketService.update(idNumber, data);
 
+            const io = getIo();
 
-            // notiifcation
+            // notiifcation & socket
             if (ticket.agentId) {
                 await NotificationService.create({
                     targetId: ticket.agentId!,
@@ -577,7 +631,10 @@ const ticketController = {
                     title: "Ticket dibatalkan",
                     message: `${user.name} membatalkan ticket ini`,
                     type: NotificationType.TICKET_CANCELLED
-                })
+                });
+
+                io.to(`user:${ticket.agentId}`).emit("notification:new")
+
             } else {
                 const agents = await UserService.findAllForNotification({
                     isActive: true,
@@ -593,9 +650,14 @@ const ticketController = {
                         message: `${user.name} membatalkan ticket ini`,
                         type: NotificationType.TICKET_CANCELLED
                     })
-                ))
+                ));
+
+                agents.forEach((agent) => {
+                    io.to(`user:${agent.id}`).emit("notification:new");
+                })
+                io.to(`ticket:${ticket.id}`).emit("ticket-status:change");
             }
-            // notification
+            // notification & socket
 
             response.success(res, result, "Success to change tickets status to in cancelled")
 

@@ -6,6 +6,7 @@ import { MessageDTO } from "../validations/message.validation.js";
 import MessageService from "../services/message.service.js";
 import NotificationService from "../services/notification.service.js";
 import { NotificationType } from "../generated/prisma/enums.js";
+import { getIo } from "../socket/index.js";
 
 const messageController = {
     create: async(req:IReqUserPlusTicket, res:Response) => {
@@ -43,6 +44,18 @@ const messageController = {
             })
 
             // notification
+
+            // socket
+            const io = getIo();
+
+            io.to(`user:${targetId}`).emit("notification:new");
+
+            io.to(`ticket:${ticket.id}`).emit("message:new");
+
+            io.to(`user:${targetId}`).emit("all-messages:new");
+            // socket
+            
+
 
             response.success(res, result, "Success to send message");
 
