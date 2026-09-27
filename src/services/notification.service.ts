@@ -163,7 +163,65 @@ const NotificationService = {
         } catch(error) {
             throw error
         }
-    }
+    },
+
+
+
+
+    markAll: async(targetId: number) => {
+        try {
+            return await prisma.notification.updateMany({
+                where: {
+                    targetId,
+                    NOT: {
+                        type: NotificationType.MESSAGE_RECEIVED
+                    }
+                },
+                data: {
+                    isRead: true
+                }
+            })
+        } catch(error) {
+            throw error
+        }
+    },
+
+
+
+    removeById: async(params: {
+        userId: number;
+        id: number;
+    }) => {
+        try {
+            return await prisma.notification.delete({
+                where: {
+                    targetId: params.userId,
+                    id: params.id,
+                    NOT: {
+                        type: NotificationType.MESSAGE_RECEIVED
+                    }
+                }
+            })
+        } catch(error) {
+            throw error
+        }
+    },
+
+
+    removeMany: async(targetId: number) => {
+        try {
+            return await prisma.notification.deleteMany({
+                where: {
+                    targetId,
+                    NOT: {
+                        type: NotificationType.MESSAGE_RECEIVED
+                    }
+                }
+            })
+        } catch(error) {
+            throw error
+        }
+    },
 }
 
 export default NotificationService

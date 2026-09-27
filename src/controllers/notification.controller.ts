@@ -113,7 +113,64 @@ const notificationController = {
         } catch(error) {
             response.error(res, error, "Failed to read message notifications")
         }
-    }
+    },
+
+
+
+    markAll: async(req:IreqUser, res: Response) => {
+        try {
+            const userId = req.user?.id;
+            if(!userId) return response.notFound(res, "User tidak ditemukan");
+
+            const result = await NotificationService.markAll(userId);
+
+            return response.success(res, result, "Success to mark all notifications")
+        } catch(error) {
+            response.error(res, error, "Failed to mark all notifications")
+        }
+    },
+
+
+
+    removeById: async(req:IreqUser, res:Response) => {
+        try {
+            const userId = req.user?.id;
+            if(!userId) return response.notFound(res, "User tidak ditemukan");
+
+            const {id} = req.params;
+            if (!id) return response.notFound(res, "Notification tidak ditemukan");
+
+            const idNumber = Number(id);
+            if(Number.isNaN(idNumber)) return response.notFound(res, "Notification tidak ditemukan");
+
+            const result = await NotificationService.removeById({
+                userId,
+                id: idNumber
+            });
+
+            return response.success(res, result, "Success to remove a notification")
+        } catch(error) {
+            response.error(res, error, "Failed to remove a notification")
+        }
+    },
+
+
+    removeMany: async(req:IreqUser, res:Response) => {
+        try {
+            const userId = req.user?.id;
+            if(!userId) return response.notFound(res, "User tidak ditemukan");
+
+            const result = await NotificationService.removeMany(userId);
+
+            return response.success(res, result, "Success to remove all notifications")
+        } catch(error) {
+            response.error(res, error, "Failed to remove all notifications")
+        }
+    },
+
+
+
+    
 }
 
 
