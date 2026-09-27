@@ -14,11 +14,11 @@ notificationRoute.get("/count-all-message", [authMiddleware], notificationContro
 
 notificationRoute.get("/count-message-by-ticket", [authMiddleware], notificationController.countMessageByTicket);
 
-notificationRoute.patch("/:id", [authMiddleware], notificationController.readNotificationById);
+notificationRoute.patch("/:id/read", [authMiddleware], notificationController.readNotificationById);
 
-notificationRoute.patch("/:ticketId/message", [authMiddleware], notificationController.readNotificationMessage);
+notificationRoute.patch("/:ticketId/read-message", [authMiddleware], notificationController.readNotificationMessage);
 
-notificationRoute.patch("/mark-all", [authMiddleware], notificationController.markAll);
+notificationRoute.patch("/mark-all/mark-all", [authMiddleware], notificationController.markAll);
 
 notificationRoute.delete("/:id/delete", [authMiddleware], notificationController.removeById);
 
