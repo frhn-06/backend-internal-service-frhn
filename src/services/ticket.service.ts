@@ -1,8 +1,10 @@
 import z from "zod";
 import { TicketDTO } from "../validations/ticket.validation.js";
 import prisma from "../config/prisma.js";
-import { Prisma } from "../generated/prisma/client.js";
+import { Prisma, PrismaClient, StatusTicket, UserRole } from "../generated/prisma/client.js";
 import generateTicketNumber from "../utils/ticketnumber.js";
+import { GlobalOmitConfig } from "../generated/prisma/internal/prismaNamespace.js";
+import { DefaultArgs } from "@prisma/client/runtime/wasm-compiler-edge";
 
 const TicketService = {
     create: async (employeeId: number, data: z.infer<typeof TicketDTO>) => {
@@ -169,7 +171,244 @@ const TicketService = {
         }catch(error) {
             throw error;
         }
-    }
+    },
+
+
+
+
+
+    findRecents: async (params: {
+        userId: number,
+        role: UserRole
+    }) => {
+        try {
+            let query: Prisma.TicketWhereInput = {};
+
+            switch(params.role) {
+                case UserRole.EMPLOYEE :
+                    query = {
+                        employeeId: params.userId
+                    }
+                    break;
+                case UserRole.AGENT :
+                    query = {
+                       agentId: params.userId,
+                       status: {
+                        notIn: [StatusTicket.CANCELLED, StatusTicket.CLOSED]
+                       }
+                    }
+                    break;
+            }
+
+            return await prisma.ticket.findMany({
+                where: query,
+                orderBy: {
+                    createdAt: "desc"
+                },
+                include: {
+                    agent: {
+                        select: {
+                            name: true
+                        }
+                    },
+                    category: {
+                        select: {
+                            name: true
+                        }
+                    },
+                    department: {
+                        select: {
+                            name: true
+                        }
+                    },
+                },
+                take: 5
+            });
+        } catch(error) {
+            throw error;
+        }
+    },
+
+
+    
+    findWhereWaiting: async (params: {
+        userId: number,
+        role: UserRole
+    }) => {
+        let query: Prisma.TicketWhereInput = {};
+
+        switch(params.role) {
+            case UserRole.EMPLOYEE :
+                query = {
+                    employeeId: params.userId,
+                    status: StatusTicket.WAITING
+                }
+                break;
+            case UserRole.AGENT :
+                query = {
+                    agentId: params.userId ,
+                    status: StatusTicket.WAITING
+                }
+                break;
+        }
+
+        try {
+            return await prisma.ticket.findMany({
+                where: query,
+                orderBy: {
+                    createdAt: "desc"
+                },
+                include: {
+                    agent: {
+                        select: {
+                            name: true
+                        }
+                    },
+                    category: {
+                        select: {
+                            name: true
+                        }
+                    },
+                    department: {
+                        select: {
+                            name: true
+                        }
+                    },
+                },
+                take: 5
+            });
+        } catch(error) {
+            throw error
+        }
+    },
+
+
+    findWhereReProgress: async (params: {
+        userId: number,
+        role: UserRole
+    }) => {
+        let query: Prisma.TicketWhereInput = {};
+
+        switch(params.role) {
+            case UserRole.EMPLOYEE :
+                query = {
+                    employeeId: params.userId,
+                    status: StatusTicket.RE_PROGRESS
+                }
+                break;
+            case UserRole.AGENT :
+                query = {
+                    agentId: params.userId ,
+                    status: StatusTicket.RE_PROGRESS
+                }
+                break;
+        }
+
+        try {
+            return await prisma.ticket.findMany({
+                where: query,
+                orderBy: {
+                    createdAt: "desc"
+                },
+                include: {
+                    agent: {
+                        select: {
+                            name: true
+                        }
+                    },
+                    category: {
+                        select: {
+                            name: true
+                        }
+                    },
+                    department: {
+                        select: {
+                            name: true
+                        }
+                    },
+                },
+                take: 5
+            });
+        } catch(error) {
+            throw error
+        }
+    },
+
+
+   countInTransactionEmployee: async (params : {
+        tx: Omit<PrismaClient<never, GlobalOmitConfig | undefined, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$use" | "$extends">,
+        userId: number;
+        status?: StatusTicket | StatusTicket[];
+   }) => {
+        let query : Prisma.TicketWhereInput = {
+            employeeId: params.userId,
+        }
+
+        if(Array.isArray(params.status)) {
+            query = {
+                ...query,
+                status: {
+                    in: params.status
+                }
+            }
+        } else {
+            query = {
+                ...query,
+                status: params.status
+            }
+        }
+
+        try {
+            return await params.tx.ticket.count({
+                where: query
+            })
+        } catch(error) {
+            throw error;
+        }
+   },
+
+
+
+   countInTransactionAgent: async (params : {
+        tx: Omit<PrismaClient<never, GlobalOmitConfig | undefined, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$use" | "$extends">,
+        userId?: number;
+        status?: StatusTicket | StatusTicket[];
+        departmentId?: number;
+   }) => {
+
+        let query: Prisma.TicketWhereInput = {
+            ...(params.userId && {
+                agentId: params.userId
+            }),
+            ...(params.departmentId && {
+                departmentId: params.departmentId
+            }),
+        };
+        if(Array.isArray(params.status)) {
+            query = {
+                ...query,
+                status: {
+                    in: params.status
+                }
+            }
+        } else {
+            query = {
+                ...query,
+                status: params.status
+            }
+        }
+        try {
+
+            return await params.tx.ticket.count({
+                where: query
+            })
+        } catch(error) {
+            throw error;
+        }
+   },
+
+
+
 }
 
 export default TicketService;
