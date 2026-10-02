@@ -70,7 +70,7 @@ ticketRoute.post("/:id/message", [authMiddleware, statusTicketMiddleware([
 messageController.create);
 
 
-ticketRoute.get("/:id/message", [authMiddleware], messageController.findMany);
+ticketRoute.get("/:id/message", [authMiddleware], messageController.findManyWithPagination);
 
 
 

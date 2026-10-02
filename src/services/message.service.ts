@@ -51,6 +51,52 @@ const MessageService = {
         } catch(error) {
             throw error
         }
+    },
+
+
+    findManyWithPagination: async(ticketId: number, page: number, limit: number) => {
+        try {
+            const messages = await prisma.message.findMany({
+                where: {
+                    ticketId
+                },
+                skip: (page - 1) * limit,
+                take: limit + 1, 
+                include: {
+                    sender: {
+                        select: {
+                            id: true,
+                            name: true,
+                            role: true
+                        }
+                    },
+                    ticket: {
+                        select: {
+                            id: true,
+                            title: true,
+                            status: true,
+                            priority: true
+                        }
+                    }
+                },
+                orderBy: {
+                    createdAt: 'desc'
+                }
+            })
+
+            const hasNextPage = messages.length > limit;
+
+            const data = messages.slice(0, limit).reverse();
+
+            return {
+                data,
+                limit,
+                page,
+                hasNextPage
+            }
+        } catch(error) {
+            throw error
+        }
     }
 }
 

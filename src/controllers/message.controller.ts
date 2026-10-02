@@ -77,7 +77,30 @@ const messageController = {
         } catch(error) {
             response.error(res, error, "Failed to send message");
         }
+    },
+
+
+    findManyWithPagination: async(req:IreqUser, res:Response) => {
+        try {
+            const {id} = req.params;
+            const idNumber = Number(id);
+            if(!id || Number.isNaN(idNumber)) return response.notFound(res, "Ticket tidak ditemukan");
+            
+            const {page, limit} = req.query as { page?: string, limit?: string };
+            const pageNumber = Number(page) || 1;
+            if(pageNumber < 1) return response.error(res, false, "Page tidak valid");
+            const limitNumber = Number(limit) || 20;
+            if(limitNumber < 1 || limitNumber > 50) return response.error(res, false, "Limit tidak valid");
+
+            const result = await MessageService.findManyWithPagination(idNumber, pageNumber, limitNumber);
+            
+
+            response.success(res, result, "Success to send message");
+        } catch(error) {
+            response.error(res, error, "Failed to send message");
+        }
     }
+
 }
 
 
