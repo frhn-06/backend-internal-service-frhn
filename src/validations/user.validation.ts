@@ -31,5 +31,20 @@ const AgentDTO = zod.object({
 });
 
 
+const UserDTO = zod.object({
+    name: z.string().trim().min(2, "Nama tidak memenuhi standar minimal").max(100, "Nama tidak memenuhi standar maksimal")
+})
 
-export {RegisterDTO, LoginDTO, AgentDTO}
+
+const PasswordDTO = zod.object({
+    password: passwordValidate,
+    confirmPassword: z.string()
+}).refine((value) => {
+    return value.password === value.confirmPassword
+}, {
+    message: "Konfirmasi password tidak sesuai",
+    path: ["confirmPassword"]
+})
+
+
+export {RegisterDTO, LoginDTO, AgentDTO, UserDTO, PasswordDTO}

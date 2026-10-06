@@ -10,6 +10,7 @@ import categoryRoute from './routes/category.route.js';
 import ticketRoute from './routes/ticket.route.js';
 import notificationRoute from './routes/notification.route.js';
 import dashboardRoute from './routes/dashboard.route.js';
+import userRoute from './routes/user.route.js';
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/api/category", categoryRoute);
 app.use("/api/ticket", ticketRoute);
 app.use("/api/notification", notificationRoute);
 app.use("/api/dashboard", dashboardRoute);
+app.use("/api/user", userRoute)
 
 
 app.use(errorMiddleware.routeError());

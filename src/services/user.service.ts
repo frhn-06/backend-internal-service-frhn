@@ -1,5 +1,8 @@
+import z from "zod";
 import prisma from "../config/prisma.js"
 import { Prisma } from "../generated/prisma/client.js";
+import { RegisterDTO, UserDTO } from "../validations/user.validation.js";
+import { hashPassword } from "../utils/bcrypt.js";
 
 const UserService = {
     getUserById: async(id: number, query?: Prisma.UserWhereInput) => {
@@ -49,6 +52,50 @@ const UserService = {
                         name: "asc"
                     }
                 ]
+            })
+        } catch(error) {
+            throw error
+        }
+    },
+
+    update: async(params: {
+        userId: number; 
+        data: Partial<z.infer<typeof UserDTO>>
+    }) => {
+        try {
+            return await prisma.user.update({
+                where: {
+                    id: params.userId,
+                    isActive: true
+                },
+                data: params.data,
+                omit: {
+                    password: true
+                }
+            })
+        } catch(error) {
+            throw error;
+        }
+    },
+
+    updatePassword: async(params: {
+        userId: number;
+        password: string
+    }) => {
+        try {
+            const passwordHashed = await hashPassword(params.password);
+            
+            return await prisma.user.update({
+                where: {
+                    id: params.userId,
+                    isActive: true
+                },
+                data: {
+                    password: passwordHashed
+                },
+                omit: {
+                    password: true
+                }
             })
         } catch(error) {
             throw error
