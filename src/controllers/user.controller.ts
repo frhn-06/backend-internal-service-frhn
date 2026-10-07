@@ -3,7 +3,7 @@ import { IreqUser } from "../types/user.js"
 import response from "../utils/response.js"
 import { PasswordDTO, UserDTO } from "../validations/user.validation.js"
 import UserService from "../services/user.service.js"
-import { hashPassword } from "../utils/bcrypt.js"
+import { comparePassword, hashPassword } from "../utils/bcrypt.js"
 import prisma from "../config/prisma.js"
 
 const userController = {
@@ -41,8 +41,8 @@ const userController = {
 
             const validatePassword = PasswordDTO.parse(req.body)
 
-            const oldPasswordHashed = await hashPassword(validatePassword.oldPassword)
-            if(oldPasswordHashed !== user.password) return response.error(res, false, "Password lama salah")
+            const samePassword = await comparePassword(validatePassword.oldPassword, user.password);
+            if(!samePassword) return response.error(res, false, "Password lama salah");
 
             if(validatePassword.newPassword !== validatePassword.confirmPassword) return response.error(res, false, "Konfirmasi password tidak sesuai");
 
