@@ -3,6 +3,8 @@ import { IreqUser } from "../types/user.js"
 import response from "../utils/response.js"
 import { PasswordDTO, UserDTO } from "../validations/user.validation.js"
 import UserService from "../services/user.service.js"
+import { hashPassword } from "../utils/bcrypt.js"
+import prisma from "../config/prisma.js"
 
 const userController = {
     update: async (req:IreqUser, res:Response) => {
@@ -32,11 +34,19 @@ const userController = {
             const userId = req.user?.id;
             if(!userId) return response.notFound(res, "User tidak ditemukan");
 
+            const user = await prisma.user.findUnique({
+                where: {id:userId}
+            });
+            if(!user) return response.notFound(res, "User tidak ditemukan");
+
             const validatePassword = PasswordDTO.parse(req.body)
+
+            const passwordHashed = await hashPassword(validatePassword.password)
+            if(passwordHashed !== user.password) return response.error(res, false, "Password salah")
 
             const result = await UserService.updatePassword({
                 userId,
-                password: validatePassword.password
+                passwordHashed
             })
             if(!result) return response.error(res, false, "Failed to update password");
 

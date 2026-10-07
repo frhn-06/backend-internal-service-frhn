@@ -80,18 +80,16 @@ const UserService = {
 
     updatePassword: async(params: {
         userId: number;
-        password: string
+        passwordHashed: string
     }) => {
-        try {
-            const passwordHashed = await hashPassword(params.password);
-            
+        try {            
             return await prisma.user.update({
                 where: {
                     id: params.userId,
                     isActive: true
                 },
                 data: {
-                    password: passwordHashed
+                    password: params.passwordHashed
                 },
                 omit: {
                     password: true
