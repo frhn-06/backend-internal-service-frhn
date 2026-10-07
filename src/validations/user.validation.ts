@@ -37,10 +37,11 @@ const UserDTO = zod.object({
 
 
 const PasswordDTO = zod.object({
-    password: passwordValidate,
+    oldPassword: passwordValidate,
+    newPassword: passwordValidate,
     confirmPassword: z.string()
 }).refine((value) => {
-    return value.password === value.confirmPassword
+    return value.newPassword === value.confirmPassword
 }, {
     message: "Konfirmasi password tidak sesuai",
     path: ["confirmPassword"]

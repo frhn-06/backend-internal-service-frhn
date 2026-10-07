@@ -41,12 +41,16 @@ const userController = {
 
             const validatePassword = PasswordDTO.parse(req.body)
 
-            const passwordHashed = await hashPassword(validatePassword.password)
-            if(passwordHashed !== user.password) return response.error(res, false, "Password salah")
+            const oldPasswordHashed = await hashPassword(validatePassword.oldPassword)
+            if(oldPasswordHashed !== user.password) return response.error(res, false, "Password lama salah")
+
+            if(validatePassword.newPassword !== validatePassword.confirmPassword) return response.error(res, false, "Konfirmasi password tidak sesuai");
+
+            const newPasswordHashed = await hashPassword(validatePassword.newPassword);
 
             const result = await UserService.updatePassword({
                 userId,
-                passwordHashed
+                passwordHashed: newPasswordHashed
             })
             if(!result) return response.error(res, false, "Failed to update password");
 
