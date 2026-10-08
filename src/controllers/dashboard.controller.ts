@@ -227,6 +227,14 @@ const dashboardController = {
 
             const chartDepartments = await DepartmentService.findForChart();
 
+            const departmentsChart = chartDepartments.map((data) => {
+                return {
+                    id: data.id,
+                    name: data.name,
+                    count: data._count.tickets
+                }
+            })
+
             const result = {
                 statistics: {
                     totalTickets,
@@ -238,7 +246,7 @@ const dashboardController = {
                 
                 recentTickets,
 
-                departmentsChart: chartDepartments,
+                departmentsChart,
 
                 agentInfo: {
                     totalAgents,
