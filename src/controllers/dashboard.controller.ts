@@ -5,6 +5,8 @@ import prisma from "../config/prisma.js";
 import { StatusTicket, UserRole } from "../generated/prisma/enums.js";
 import TicketService from "../services/ticket.service.js";
 import UserService from "../services/user.service.js";
+import AgentService from "../services/agent.service.js";
+import DepartmentService from "../services/department.service.js";
 
 const dashboardController = {
     employee: async (req:IreqUser, res:Response) => {
@@ -160,6 +162,93 @@ const dashboardController = {
             
         } catch(error) {
             response.error(res, error, "Failed to get data dashboard agent");
+        }
+    },
+
+
+
+
+    admin: async (req:IreqUser, res:Response) => {
+        try{
+            const userId = req.user?.id;
+            if(!userId) return response.notFound(res, "User tidak ditemukan");
+
+            const [
+                totalTickets,
+                ticketsOpen,
+                ticketsInProgress,
+                ticketsWaiting,
+                ticketsResolved
+            ] = await prisma.$transaction(async(tx) => {
+                return [
+                    await TicketService.countInTransactionAdmin({tx}),
+
+                    await TicketService.countInTransactionAdmin({
+                        tx,
+                        status: StatusTicket.OPEN
+                    }),
+
+                    await TicketService.countInTransactionAdmin({
+                        tx,
+                        status: [StatusTicket.IN_PROGRESS, StatusTicket.RE_PROGRESS]
+                    }),
+
+                    await TicketService.countInTransactionAdmin({
+                        tx,
+                        status: StatusTicket.WAITING
+                    }),
+
+                    await TicketService.countInTransactionAdmin({
+                        tx,
+                        status: StatusTicket.RESOLVED
+                    })
+                ]
+            })
+
+            const recentTickets = await TicketService.findRecents({
+                userId,
+                role: UserRole.ADMIN,
+            });
+
+
+            const [
+                totalAgents,
+                activeAgents
+            ] = await prisma.$transaction(async(tx) => {
+                return [
+                    await AgentService.countAgentTransaction({tx}),
+
+                    await AgentService.countAgentTransaction({tx,
+                        isActive: true
+                    })
+                ]
+            });
+
+
+            const chartDepartments = await DepartmentService.findForChart();
+
+            const result = {
+                statistics: {
+                    totalTickets,
+                    ticketsOpen,
+                    ticketsInProgress,
+                    ticketsWaiting,
+                    ticketsResolved,
+                },
+                
+                recentTickets,
+
+                departmentsChart: chartDepartments,
+
+                agentInfo: {
+                    totalAgents,
+                    activeAgents   
+                }
+            }
+
+            response.success(res, result, "Success to get dashboard admin data")
+        } catch(error) {
+            response.error(res, error, "Failed to get dashboard admin data")
         }
     }
 }

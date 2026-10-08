@@ -1,7 +1,7 @@
 import z from "zod";
 import { DepartmentDTO } from "../validations/department.validation.js";
 import prisma from "../config/prisma.js";
-import { Department, Prisma } from "../generated/prisma/client.js";
+import { Department, Prisma, StatusTicket } from "../generated/prisma/client.js";
 import { DepartmentWhereInput } from "../generated/prisma/models.js";
 
 const DepartmentService = {
@@ -75,6 +75,31 @@ const DepartmentService = {
             })
         } catch(error) {
             throw error
+        }
+    },
+
+    
+    findForChart: async() => {
+        try {
+            return await prisma.department.findMany({
+                select: {
+                    id: true,
+                    name: true,
+                    _count: {
+                        select: {
+                            tickets: {
+                                where: {
+                                    status: {
+                                        notIn: [StatusTicket.CANCELLED, StatusTicket.CLOSED]
+                                    }
+                                },
+                            }
+                        }
+                    }
+                }
+            })
+        } catch(error) {
+            throw error;
         }
     }
 }

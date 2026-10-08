@@ -3,6 +3,9 @@ import { AgentDTO } from '../validations/user.validation.js';
 import prisma from '../config/prisma.js';
 import { UserRole } from '../generated/prisma/enums.js';
 import { hashPassword } from '../utils/bcrypt.js';
+import { Prisma, PrismaClient } from '../generated/prisma/client.js';
+import { GlobalOmitConfig } from '../generated/prisma/internal/prismaNamespace.js';
+import { DefaultArgs } from '@prisma/client/runtime/wasm-compiler-edge';
 
 
 const AgentService = {
@@ -41,6 +44,27 @@ const AgentService = {
             throw error
         }
     },
+
+
+
+    countAgentTransaction: async (params: {
+        tx: Omit<PrismaClient<never, GlobalOmitConfig | undefined, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$use" | "$extends">, 
+        isActive?: boolean
+    }) => {
+        let query:Prisma.UserWhereInput = {};
+        if(params.isActive) {
+            query = {
+                isActive: params.isActive
+            }
+        }
+        try{
+            return await params.tx.user.count({
+                where:  query
+            })
+        }catch(error) {
+            throw error;
+        }
+    }
 
 
     

@@ -3,7 +3,7 @@ import { TicketDTO } from "../validations/ticket.validation.js";
 import prisma from "../config/prisma.js";
 import { Prisma, PrismaClient, StatusTicket, UserRole } from "../generated/prisma/client.js";
 import generateTicketNumber from "../utils/ticketnumber.js";
-import { GlobalOmitConfig } from "../generated/prisma/internal/prismaNamespace.js";
+import { GlobalOmitConfig, TicketScalarFieldEnum } from "../generated/prisma/internal/prismaNamespace.js";
 import { DefaultArgs } from "@prisma/client/runtime/wasm-compiler-edge";
 
 const TicketService = {
@@ -198,6 +198,13 @@ const TicketService = {
                        }
                     }
                     break;
+                case UserRole.ADMIN :
+                    query = {
+                        status: {
+                            notIn: [StatusTicket.CANCELLED, StatusTicket.CLOSED]
+                        }
+                    }
+                    break;
             }
 
             return await prisma.ticket.findMany({
@@ -228,7 +235,6 @@ const TicketService = {
             throw error;
         }
     },
-
 
     
     findWhereWaiting: async (params: {
@@ -407,6 +413,51 @@ const TicketService = {
         }
    },
 
+
+
+   countInTransactionAdmin: async(params: {
+        tx: Omit<PrismaClient<never, GlobalOmitConfig | undefined, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$use" | "$extends">,
+        status?: StatusTicket | StatusTicket[];
+   }) => {
+        try {
+            let query :Prisma.TicketWhereInput = {}
+            if(params.status && Array.isArray(params.status)) {
+                query = {
+                    ...query,
+                    status: {
+                        in: params.status
+                    }
+                }
+            } else if (params.status && !Array.isArray(params.status)){
+                query = {
+                    ...query,
+                    status: params.status
+                }
+            }
+
+            return await params.tx.ticket.count({
+                where: query
+            })
+        }catch(error) {
+            throw error
+        }
+   },
+
+
+
+    groupBy: async (by: TicketScalarFieldEnum[]) => {
+        try{
+            return await prisma.ticket.groupBy({
+                by: by,
+                _count: {
+                    id: true
+                }
+            });
+
+        }catch(error) {
+            throw error;
+        }
+    },
 
 
 }

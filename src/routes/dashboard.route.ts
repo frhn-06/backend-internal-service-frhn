@@ -11,5 +11,7 @@ dashboardRoute.get("/employee", [authMiddleware, roleMiddleware([UserRole.EMPLOY
 
 dashboardRoute.get("/agent", [authMiddleware, roleMiddleware([UserRole.AGENT])], dashboardController.agent);
 
+dashboardRoute.get("/admin", [authMiddleware, roleMiddleware([UserRole.ADMIN])], dashboardController.admin);
+
 
 export default dashboardRoute;
