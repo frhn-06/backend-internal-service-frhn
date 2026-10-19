@@ -22,11 +22,6 @@ const messageController = {
             const ticket = await TicketService.findById(idNumber);
             if(!ticket) return response.notFound(res, "Ticket tidak ditemukan");
 
-            const validate = MessageDTO.parse(req.body);
-
-            const result = await MessageService.create(userId, ticket.id, validate);
-
-            // notification
             let targetId: number;
             if(req.user?.role === "AGENT") {
                 targetId = ticket.employeeId;
@@ -34,6 +29,12 @@ const messageController = {
                 if(!ticket.agentId) return response.notFound(res, "Agent tidak ditemukan");
                 targetId = ticket.agentId
             }
+
+            const validate = MessageDTO.parse(req.body);
+
+            const result = await MessageService.create(userId, ticket.id, validate);
+
+            // notification
             await NotificationService.create({
                 type: NotificationType.MESSAGE_RECEIVED,
                 title: "Pesan baru",
@@ -42,7 +43,6 @@ const messageController = {
                 targetId: targetId,
                 ticketId: ticket.id
             })
-
             // notification
 
             // socket
@@ -53,6 +53,12 @@ const messageController = {
             io.to(`ticket:${ticket.id}`).emit("message:new");
 
             io.to(`user:${targetId}`).emit("all-messages:new");
+
+            io.to(`user:${targetId}`).emit("toast:new", {
+                type: "message",
+                title: "Pesan Masuk",
+                description: `${result.sender.name}: ${result.content}`
+            })
             // socket
             
 
