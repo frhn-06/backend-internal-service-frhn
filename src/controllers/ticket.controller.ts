@@ -60,6 +60,11 @@ const ticketController = {
             const io = getIo();
             agents.forEach((agent) => {
                 io.to(`user:${agent.id}`).emit("notification:new")
+                io.to(`user:${agent.id}`).emit("toast:new", {
+                    type: "notification",
+                    title: "Tiket Baru",
+                    description: `Tiket dibut oleh ${result.employee.name}.`
+                })
             })
             // socket
 
@@ -336,6 +341,12 @@ const ticketController = {
             io.to(`user:${ticket.employeeId}`).emit("notification:new");
 
             io.to(`ticket:${ticket.id}`).emit("ticket-status:change");
+
+            io.to(`user:${ticket.employeeId}`).emit("toast:new", {
+                type: "notification",
+                title: "Tiket Diambil",
+                description: `Agent ${user.name} telah mengambil tiket anda untuk ditangani.`
+            })
             // socket
 
 
@@ -386,6 +397,12 @@ const ticketController = {
             io.to(`user:${ticket.employeeId}`).emit("notification:new");
 
             io.to(`ticket:${ticket.id}`).emit("ticket-status:change");
+
+            io.to(`user:${ticket.employeeId}`).emit("toast:new", {
+                type: "notification",
+                title: "Menunggu Informasi",
+                description: `Agent ${user.name} menunggu informasi tambahan terkait tiket Anda.`
+            })
             // socket
 
             response.success(res, result, "Success to change tickets status to in waiting")
@@ -435,11 +452,13 @@ const ticketController = {
             const io = getIo();
             io.to(`user:${ticket.employeeId}`).emit("notification:new");
 
-            console.log("🔥 STATUS AKAN DI-EMIT:", ticket.id);
-
             io.to(`ticket:${ticket.id}`).emit("ticket-status:change");
 
-            console.log("🔥 STATUS SUDAH DI-EMIT:", ticket.id);
+            io.to(`user:${ticket.employeeId}`).emit("toast:new", {
+                type: "notification",
+                title: "Penanganan Selesai",
+                description: `Agent ${user.name} telah menyelesaikan penanganan tiket Anda.`
+            })
             // socket
 
             response.success(res, result, "Success to change tickets status to in resolved")
@@ -488,7 +507,14 @@ const ticketController = {
             // socket
             const io = getIo();
             io.to(`user:${ticket.employeeId}`).emit("notification:new");
-            io.to(`ticket:${ticket.id}`).emit("ticket-status:change");
+
+            io.to(`ticket:${ticket.id}`).emit("ticket-status:change");                                                          
+
+            io.to(`user:${ticket.employeeId}`).emit("toast:new", {
+                type: "notification",
+                title: "Tiket Sedang Ditangani",
+                description: `Agent ${user.name} sedang menangani tiket Anda.`
+            })
             // socket
 
             response.success(res, result, "Success to change tickets status to in closed")
@@ -537,7 +563,14 @@ const ticketController = {
             // socket
             const io = getIo();
             io.to(`user:${ticket.agentId}`).emit("notification:new")
+
             io.to(`ticket:${ticket.id}`).emit("ticket-status:change");
+
+            io.to(`user:${ticket.agentId}`).emit("toast:new", {
+                type: "notification",
+                title: "Tiket Dibuka Kembali",
+                description: `${user.name} membuka kembali tiket dan memerlukan tindak lanjut.`
+            })
             // socket
 
             response.success(res, result, "Success to change tickets status to in closed")
@@ -586,7 +619,14 @@ const ticketController = {
             // socket
             const io = getIo();
             io.to(`user:${ticket.agentId}`).emit("notification:new");
+
             io.to(`ticket:${ticket.id}`).emit("ticket-status:change");
+
+            io.to(`user:${ticket.agentId}`).emit("toast:new", {
+                type: "notification",
+                title: "Tiket Ditutup",
+                description: `${user.name} telah menutup tiket yang ditangani.`
+            })
             // socket
 
             response.success(res, result, "Success to change tickets status to in closed")
