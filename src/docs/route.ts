@@ -7,7 +7,7 @@ import swaggerDocument from './swagger-output.json' with {
 
 const swaggerDocs = (app: Express) => {
 
-    app.use('/api-doc', swaggerUi.serveFiles(swaggerDocument), swaggerUi.setup(swaggerDocument));
+    app.use('/api-doc', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 }
 
 export default swaggerDocs;
