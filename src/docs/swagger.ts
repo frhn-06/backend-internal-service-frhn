@@ -12,7 +12,7 @@ const doc = {
             description: "Local Server"
         },
         {
-            url: "https://backend-internal-service-frhn.vercel.app",
+            url: "https://backend-internal-service.vercel.app",
             description: "Deploy Vercel"
         }
     ],
