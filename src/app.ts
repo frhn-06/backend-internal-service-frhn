@@ -11,6 +11,7 @@ import ticketRoute from './routes/ticket.route.js';
 import notificationRoute from './routes/notification.route.js';
 import dashboardRoute from './routes/dashboard.route.js';
 import userRoute from './routes/user.route.js';
+import swaggerDocs from './docs/route.js';
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use("/api/notification", notificationRoute);
 app.use("/api/dashboard", dashboardRoute);
 app.use("/api/user", userRoute)
 
+swaggerDocs(app)
 
 app.use(errorMiddleware.routeError());
 

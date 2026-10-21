@@ -7,11 +7,38 @@ import dashboardController from '../controllers/dashboard.controller.js';
 const dashboardRoute = express.Router();
 
 
-dashboardRoute.get("/employee", [authMiddleware, roleMiddleware([UserRole.EMPLOYEE])], dashboardController.employee);
+dashboardRoute.get("/employee", [authMiddleware, roleMiddleware([UserRole.EMPLOYEE])], dashboardController.employee
+/**
+    #swagger.tags = ["Dashboard"]
+    #swagger.security = [
+      {
+        "bearerAuth": []
+      }
+    ]
+ */
+);
 
-dashboardRoute.get("/agent", [authMiddleware, roleMiddleware([UserRole.AGENT])], dashboardController.agent);
+dashboardRoute.get("/agent", [authMiddleware, roleMiddleware([UserRole.AGENT])], dashboardController.agent
+/**
+    #swagger.tags = ["Dashboard"]
+    #swagger.security = [
+      {
+        "bearerAuth": []
+      }
+    ]
+ */
+);
 
-dashboardRoute.get("/admin", [authMiddleware, roleMiddleware([UserRole.ADMIN])], dashboardController.admin);
+dashboardRoute.get("/admin", [authMiddleware, roleMiddleware([UserRole.ADMIN])], dashboardController.admin
+/**
+    #swagger.tags = ["Dashboard"]
+    #swagger.security = [
+      {
+        "bearerAuth": []
+      }
+    ]
+ */
+);
 
 
 export default dashboardRoute;
