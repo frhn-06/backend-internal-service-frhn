@@ -1,5 +1,6 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { Response } from "express";
+import { APIError } from "openai";
 import {ZodError} from 'zod';
 
 const response = {
@@ -63,6 +64,25 @@ const response = {
                         }
                     })
             }
+        }
+
+
+        if(error instanceof APIError) {
+            if(error.status === 429) {
+                return res.status(503).json({
+                    meta: {
+                        status: 503,
+                        message: "Layanan AI sedang tidak tersedia. Silakan coba kembali nanti."
+                    }
+                })
+            }
+
+            return res.status(502).json({
+                meta: {
+                    status: 502,
+                    message: "Terjadi masalah saat memproses permintaan ke layanan AI."
+                }
+            })
         }
 
         

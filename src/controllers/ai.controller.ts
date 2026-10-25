@@ -15,10 +15,7 @@ const aiController = {
             const ticket = await TicketService.findByIdWithMessages(idNumber);
             if(!ticket) return response.notFound(res, "Ticket tidak ditemukan");
 
-            // const result = await AiService.generateReply(ticket);
-            const result = {
-                reply: "Saat ini generate ai sedang tidak berjalan dikarenakan developer belum membayar bulanan lagi"
-            }
+            const result = await AiService.generateReply(ticket);
 
             response.success(res, result, "Success to generate ai")
             
