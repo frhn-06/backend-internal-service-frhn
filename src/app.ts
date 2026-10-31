@@ -36,6 +36,8 @@ app.get("/tes-query", async (req, res) => {
     const duration = performance.now() - start;
 
     console.log("DATABASE PING", duration, "ms")
+
+    return res.status(200).json({oke:""})
 });
 // ////////////////////////////////////////
 
