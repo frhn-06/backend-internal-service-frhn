@@ -12,7 +12,7 @@ import notificationRoute from './routes/notification.route.js';
 import dashboardRoute from './routes/dashboard.route.js';
 import userRoute from './routes/user.route.js';
 import swaggerDocs from './docs/route.js';
-import prisma from './config/prisma.js';
+
 
 const app = express();
 
@@ -26,20 +26,6 @@ app.get("/", (req, res) => {
         developer: "farhan"
     })
 });
-
-// ////////////////////////////////////////
-app.get("/tes-query", async (req, res) => {
-    const start = performance.now();
-
-    await prisma.$queryRaw`SELECT 1`;
-
-    const duration = performance.now() - start;
-
-    console.log("DATABASE PING", duration, "ms")
-
-    return res.status(200).json({oke:""})
-});
-// ////////////////////////////////////////
 
 app.use("/api/auth", authRoute);
 app.use("/api/department", departmentRoute);

@@ -97,9 +97,7 @@ const ticketController = {
             const numberLimit = Number(limit);
             if (Number.isNaN(numberPage) || Number.isNaN(numberLimit)) return response.notFound(res, "Tickets tidak ditemukan")
 
-            console.time("GET_USER");
             const user = await UserService.getUserById(id);
-            console.timeEnd("GET_USER");
             if (!user) return response.notFound(res, "User tidak ditemukan");
 
             const setQuery = () => {
@@ -152,13 +150,9 @@ const ticketController = {
 
             const query = setQuery()
 
-            console.time("FIND_TICKETS");
             const result = await TicketService.findByRole(query, numberPage, numberLimit);
-            console.timeEnd("FIND_TICKETS");
 
-            console.time("COUNT_TICKETS");
             const total = await TicketService.counttotal(query);
-            console.timeEnd("COUNT_TICKETS");
 
             return response.pagination(res, result, {
                 total,
